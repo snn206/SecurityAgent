@@ -16,9 +16,8 @@ class ToolRegistry:
     def __init__(self, config_path: Path | None = None) -> None:
         self._tools: dict[str, BaseTool] = {}
         self._configs: dict[str, ToolConfig] = {}
-        self._config_path = config_path or (
-            Path(__file__).parent.parent.parent.parent.parent / "config" / "tools.yaml"
-        )
+        from security_agent.core.paths import get_config_path
+        self._config_path = config_path or get_config_path("tools.yaml")
 
     def load(self) -> None:
         from security_agent.tools.builtin import NmapTool, GobusterTool, SqlmapTool, NiktoTool, WhoisTool, CurlTool, ShellTool

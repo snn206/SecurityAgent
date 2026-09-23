@@ -15,7 +15,8 @@ class ToolSync:
 
     def __init__(self) -> None:
         self._manager = SandboxManager()
-        registry_path = Path(__file__).parent.parent.parent.parent.parent / "registry" / "versions.yaml"
+        from security_agent.core.paths import get_repo_root
+        registry_path = get_repo_root() / "registry" / "versions.yaml"
         if registry_path.exists():
             with registry_path.open() as f:
                 self._registry: dict[str, Any] = yaml.safe_load(f)

@@ -7,9 +7,8 @@ import yaml
 class AgentRegistry:
     def __init__(self, config_path: Path | None = None) -> None:
         self._agents: dict[str, dict[str, Any]] = {}
-        self._config_path = config_path or (
-            Path(__file__).parent.parent.parent.parent.parent / "config" / "agents.yaml"
-        )
+        from security_agent.core.paths import get_config_path
+        self._config_path = config_path or get_config_path("agents.yaml")
 
     def load(self) -> None:
         if not self._config_path.exists():

@@ -28,9 +28,8 @@ class CommandExecutor:
     """Executes commands inside a Docker sandbox container."""
 
     def __init__(self, config_path: Path | None = None) -> None:
-        cfg_path = config_path or (
-            Path(__file__).parent.parent.parent.parent.parent / "config" / "sandbox.yaml"
-        )
+        from security_agent.core.paths import get_config_path
+        cfg_path = config_path or get_config_path("sandbox.yaml")
         if cfg_path.exists():
             with cfg_path.open() as f:
                 self._cfg: dict[str, Any] = yaml.safe_load(f).get("sandbox", {})

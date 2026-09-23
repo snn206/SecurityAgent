@@ -17,9 +17,8 @@ class ProviderRegistry:
     def __init__(self, config_path: Path | None = None) -> None:
         self._providers: dict[str, BaseProvider] = {}
         self._config: dict[str, Any] = {}
-        self._config_path = config_path or (
-            Path(__file__).parent.parent.parent.parent.parent / "config" / "providers.yaml"
-        )
+        from security_agent.core.paths import get_config_path
+        self._config_path = config_path or get_config_path("providers.yaml")
 
     def load(self) -> None:
         """Load all enabled providers from config file."""
