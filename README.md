@@ -32,21 +32,58 @@ Built on **LangGraph**, **Deep Agents**, a **JEV (Judge / Evaluator / Verifier) 
 
 ### 2. Cài Đặt (Installation)
 
+#### Cách 1: Cài Đặt Trực Tiếp Từ GitHub (Khuyên Dùng Cho Người Sử Dụng)
+Bạn có thể cài đặt trực tiếp `SecurityAgent` từ GitHub bằng `uv` hoặc `pip` mà không cần clone toàn bộ repository:
+
 ```bash
-# 1. Clone mã nguồn
+# Cài đặt bản mới nhất qua uv (dùng giao thức SSH):
+uv pip install git+ssh://git@github.com/snn206/SecurityAgent.git
+
+# Hoặc qua HTTPS:
+uv pip install git+https://github.com/snn206/SecurityAgent.git
+
+# Cài đặt qua pip tiêu chuẩn:
+pip install git+ssh://git@github.com/snn206/SecurityAgent.git
+# Hoặc: pip install git+https://github.com/snn206/SecurityAgent.git
+
+# Cài đặt kèm các optional dependencies (ví dụ xuất báo cáo PDF và công cụ dev):
+uv pip install "security-agent[pdf,dev] @ git+https://github.com/snn206/SecurityAgent.git"
+```
+
+##### Cài Đặt & Ghim Phiên Bản Cụ Thể (Version Pinning & Rollback từ Git)
+Bạn có thể cài đặt bất kỳ phiên bản nào theo **Git Tag** hoặc **Commit SHA** cụ thể:
+```bash
+# Cài đặt theo Git Release Tag (ví dụ v0.1.0):
+uv pip install git+https://github.com/snn206/SecurityAgent.git@v0.1.0
+
+# Rollback hoặc cài đặt theo Commit SHA cụ thể:
+uv pip install git+https://github.com/snn206/SecurityAgent.git@e312112
+
+# Cài đặt theo Branch (ví dụ nhánh develop hoặc main):
+uv pip install git+https://github.com/snn206/SecurityAgent.git@main
+```
+
+Sau khi cài đặt, hai lệnh CLI sẽ sẵn sàng trong terminal:
+- `security-agent` — Khởi chạy API Server và Web UI.
+- `sa-update` — Quản lý, kiểm tra, update và rollback phiên bản từng thành phần độc lập.
+
+---
+
+#### Cách 2: Clone Mã Nguồn (Dành Cho Phát Triển Cục Bộ)
+```bash
+# 1. Clone repository
 git clone git@github.com:snn206/SecurityAgent.git
 cd SecurityAgent
 
 # 2. Thiết lập biến môi trường
 cp .env.example .env
-# Chỉnh sửa file .env để điền các API Key (Anthropic, OpenAI, DeepSeek, v.v.)
 
-# 3. Cài đặt dependencies Python bằng uv (nhanh và tự động tạo virtualenv)
-uv sync
+# 3. Cài đặt môi trường bằng uv (tự động tạo .venv và cài đặt trọn gói)
+uv sync --extra dev
 
 # Hoặc kích hoạt venv và cài đặt bằng pip:
 source .venv/bin/activate
-pip install -e ".[dev]"
+pip install -e ".[dev,pdf]"
 ```
 
 ---
@@ -166,15 +203,52 @@ uv run python scripts/run_unit_tests.py
 
 ---
 
-## Quản Lý Phiên Bản Độc Lập (Versioning CLI)
+## Quản Lý Phiên Bản Độc Lập (Versioning CLI: `sa-update`)
 
-Các thành phần (tools, agents, providers) có version riêng, không khóa chéo:
+Hệ thống tuân thủ nghiêm ngặt nguyên tắc **độc lập phiên bản**:
+- Các thành phần (`core`, `providers`, `agents`, `tools`, `packages`, `extensions`) có version riêng, **không khóa version chéo**.
+- Có thể **update/rollback từng thành phần độc lập** mà không ảnh hưởng tới thành phần khác.
+- Có lệnh **update toàn bộ lên latest**.
+- Hỗ trợ đa dạng loại artifact: `git-tag`, `git-commit`, `docker-tag`, `pypi`, `.zip`.
+- Quản lý metadata phiên bản tập trung tại [`registry/versions.yaml`](file:///home/nexus/documents/security-agent/registry/versions.yaml) kèm changelog chi tiết.
+
+### 1. Bảng Lệnh CLI `sa-update`
 
 ```bash
-make versions                                    # Xem danh sách version hiện tại
-make update                                      # Cập nhật toàn bộ lên latest
-make update-component COMPONENT=tools.nmap       # Cập nhật riêng 1 tool
-make rollback COMPONENT=providers.anthropic VERSION=1.2.0  # Rollback phiên bản
+# ── Xem danh sách & thông tin ──────────────────────────────────────────────
+sa-update list                              # Liệt kê tất cả component, version và artifact type
+sa-update info core                         # Xem chi tiết metadata, ref, changelog của core
+sa-update info providers.anthropic          # Xem chi tiết package và min-version provider
+
+# ── Cập nhật (Update) ──────────────────────────────────────────────────────
+sa-update update all                        # Cập nhật TOÀN BỘ thành phần lên bản mới nhất
+sa-update update core                       # Cập nhật riêng core từ GitHub repo (HTTPS)
+sa-update update core --ssh                 # Cập nhật riêng core từ GitHub repo (SSH)
+sa-update update providers.anthropic        # Cập nhật độc lập provider Anthropic
+sa-update update tools.nmap                 # Cập nhật độc lập tool Nmap trong Kali sandbox
+
+# ── Quay lui phiên bản (Rollback) ──────────────────────────────────────────
+# Rollback core về Git Release Tag cụ thể:
+sa-update rollback core v0.1.0
+
+# Rollback core về Commit SHA cụ thể:
+sa-update rollback core e312112
+
+# Rollback độc lập một provider về phiên bản thư viện chỉ định:
+sa-update rollback providers.anthropic 0.2.0
+
+# Rollback phiên bản tool trong registry:
+sa-update rollback tools.nmap 7.94
+```
+
+### 2. Dùng Makefile (Khi đang ở thư mục repo)
+
+```bash
+make versions                                          # Chạy sa-update list
+make update                                            # Cập nhật toàn bộ lên latest
+make update-component COMPONENT=core                   # Cập nhật riêng core
+make update-component COMPONENT=tools.nmap             # Cập nhật riêng 1 tool
+make rollback COMPONENT=providers.anthropic VERSION=0.2.0  # Rollback phiên bản
 ```
 
 ---

@@ -66,7 +66,7 @@ docker-build: ## Build all Docker images
 	docker compose -f docker/docker-compose.yml build
 
 sandbox-build: ## Build only the Kali sandbox image
-	docker build -f docker/Dockerfile.sandbox -t security-agent-sandbox:latest docker/
+	docker build -f docker/Dockerfile.sandbox -t security-agent-sandbox:latest .
 
 docker-up: ## Start full stack (API + sandbox + DB)
 	docker compose -f docker/docker-compose.yml up -d
@@ -83,16 +83,16 @@ docker-logs: ## Tail container logs
 # ─── Version Management ───────────────────────────────────────────────────────
 
 update: ## Update all components to latest
-	$(UV) run python scripts/update.py update all
+	$(UV) run sa-update update all
 
 update-component: ## Update a single component: make update-component COMPONENT=tools.nmap
-	$(UV) run python scripts/update.py update $(COMPONENT)
+	$(UV) run sa-update update $(COMPONENT)
 
 rollback: ## Rollback: make rollback COMPONENT=providers.anthropic VERSION=1.2.0
-	$(UV) run python scripts/update.py rollback $(COMPONENT) $(VERSION)
+	$(UV) run sa-update rollback $(COMPONENT) $(VERSION)
 
 versions: ## List current versions of all components
-	$(UV) run python scripts/update.py list
+	$(UV) run sa-update list
 
 # ─── Cleanup ─────────────────────────────────────────────────────────────────
 

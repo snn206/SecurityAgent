@@ -67,7 +67,7 @@ Changelog = "https://github.com/snn206/SecurityAgent/blob/main/CHANGELOG.md"
 
 [project.scripts]
 security-agent = "security_agent.api.app:main"
-sa-update = "scripts.update:main"
+sa-update = "security_agent.versioning.cli:main"
 
 
 [project.optional-dependencies]
@@ -91,6 +91,10 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/security_agent"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"registry" = "security_agent/registry"
+"config" = "security_agent/config"
 
 [tool.ruff]
 src = ["src"]
