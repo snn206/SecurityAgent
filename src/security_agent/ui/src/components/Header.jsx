@@ -9,6 +9,7 @@ export default function Header({ activeTab, setActiveTab, systemStatus, activeEx
     { id: 'providers', label: 'PROVIDERS' },
     { id: 'tools', label: 'TOOL REGISTRY' },
     { id: 'memory', label: 'MEMORY & BRAIN' },
+    { id: 'versions', label: 'VERSIONS' },
   ];
 
   const isOnline = systemStatus?.status === 'ok' || systemStatus?.status === 'healthy';

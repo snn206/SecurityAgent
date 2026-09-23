@@ -7,6 +7,7 @@ import ExecutionsTab from './components/ExecutionsTab';
 import ProvidersTab from './components/ProvidersTab';
 import ToolsTab from './components/ToolsTab';
 import MemoryTab from './components/MemoryTab';
+import VersionsTab from './components/VersionsTab';
 import { checkHealth, fetchExecutions, fetchProviders, fetchTools } from './api';
 
 export default function App() {
@@ -121,6 +122,10 @@ export default function App() {
 
         {activeTab === 'memory' && (
           <MemoryTab />
+        )}
+
+        {activeTab === 'versions' && (
+          <VersionsTab />
         )}
       </main>
     </div>

@@ -128,3 +128,51 @@ async def test_react_ui_serving(app):
         # Verify served HTML has root div and title
         assert '<div id="root">' in res.text
         assert "SECURITY_AGENT" in res.text
+
+
+@pytest.mark.asyncio
+async def test_versions_api(app, monkeypatch):
+    monkeypatch.setattr(
+        "security_agent.versioning.manager.subprocess.run",
+        lambda *args, **kwargs: type("Proc", (), {"returncode": 0, "stdout": "", "stderr": ""})(),
+    )
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # 1. List all versions
+        res = await client.get("/api/v1/versions")
+        assert res.status_code == 200
+        data = res.json()
+        assert data["status"] == "ok"
+        assert len(data["components"]) > 10
+        comp_ids = [c["id"] for c in data["components"]]
+        assert "core" in comp_ids
+        assert "providers.anthropic" in comp_ids
+        assert "tools.nmap" in comp_ids
+
+        # 2. Get specific component details
+        core_res = await client.get("/api/v1/versions/core")
+        assert core_res.status_code == 200
+        core_data = core_res.json()
+        assert core_data["component"] == "core"
+        assert "entry" in core_data
+
+        # 3. Test independent rollback
+        rb_res = await client.post(
+            "/api/v1/versions/rollback",
+            json={"component": "providers.anthropic", "target": "0.1.0"},
+        )
+        assert rb_res.status_code == 200
+        assert rb_res.json()["status"] == "ok"
+
+        # 4. Test install artifact
+        art_res = await client.post(
+            "/api/v1/versions/install-artifact",
+            json={
+                "component": "extensions.test_plugin",
+                "artifact_source": "1.0.0",
+                "artifact_type": "git-tag",
+            },
+        )
+        assert art_res.status_code == 200
+        assert art_res.json()["status"] == "ok"
+

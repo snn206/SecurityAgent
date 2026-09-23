@@ -20,6 +20,7 @@ from security_agent.api.routers import (
     reports,
     tasks,
     tools,
+    versions,
 )
 from security_agent.api.websocket.manager import ConnectionManager
 from security_agent.execution.history import HistoryStore
@@ -84,6 +85,7 @@ def create_app() -> FastAPI:
     app.include_router(tools.router, prefix="/api/v1")
     app.include_router(memory.router, prefix="/api/v1")
     app.include_router(hierarchy.router, prefix="/api/v1")
+    app.include_router(versions.router, prefix="/api/v1")
 
     # ── WebSocket ──────────────────────────────────────────────────────────────
     from security_agent.api.websocket.events import ws_router

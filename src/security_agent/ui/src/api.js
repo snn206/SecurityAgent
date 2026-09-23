@@ -160,3 +160,62 @@ export async function fetchQueueStatus() {
   }
 }
 
+// ── Versioning & Independent Component Management API ───────────────────────
+
+export async function fetchVersions() {
+  try {
+    const res = await fetch(`${BASE_URL}/api/v1/versions`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error('Failed to fetch versions:', err);
+    return { status: 'error', total: 0, categories: [], components: [] };
+  }
+}
+
+export async function fetchComponentInfo(componentPath) {
+  const res = await fetch(`${BASE_URL}/api/v1/versions/${componentPath}`);
+  if (!res.ok) throw new Error('Failed to load component metadata');
+  return await res.json();
+}
+
+export async function updateComponentVersion(component = 'all', ref = null, useSsh = false) {
+  const res = await fetch(`${BASE_URL}/api/v1/versions/update`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ component, ref, use_ssh: useSsh }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || 'Failed to update component');
+  }
+  return await res.json();
+}
+
+export async function rollbackComponentVersion(component, target, useSsh = false) {
+  const res = await fetch(`${BASE_URL}/api/v1/versions/rollback`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ component, target, use_ssh: useSsh }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || 'Failed to rollback component');
+  }
+  return await res.json();
+}
+
+export async function installComponentArtifact(component, artifactSource, artifactType = null) {
+  const res = await fetch(`${BASE_URL}/api/v1/versions/install-artifact`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ component, artifact_source: artifactSource, artifact_type: artifactType }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || 'Failed to install artifact');
+  }
+  return await res.json();
+}
+
+

@@ -195,6 +195,29 @@ def cmd_rollback(
         )
 
 
+@app.command("install-artifact")
+def cmd_install_artifact(
+    component: str = typer.Argument(
+        ..., help="Component path ('core', 'extensions.burp_importer', etc.)"
+    ),
+    source: str = typer.Argument(
+        ..., help="Source URL (.zip), local archive path, git ref, or package version"
+    ),
+    artifact_type: str | None = typer.Option(
+        None, "--type", "-t", help="Artifact type: zip | git-tag | git-commit | pypi"
+    ),
+) -> None:
+    """Download and install an independent artifact (.zip, git tag/commit, or PyPI package) into the app."""
+    vm = VersionManager()
+    console.print(f"[cyan][*] Installing artifact for '{component}' from: {source}...[/cyan]")
+    ok, msg = vm.download_and_install_artifact(component, source, artifact_type=artifact_type)
+    if ok:
+        console.print(f"[green][✓] {msg}[/green]")
+    else:
+        console.print(f"[red][✗] {msg}[/red]")
+        raise typer.Exit(1)
+
+
 def main() -> None:
     app()
 

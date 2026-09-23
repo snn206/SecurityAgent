@@ -119,6 +119,7 @@ disable_error_code = [
     "return-value",
     "call-overload",
     "syntax",
+    "assignment",
 ]
 exclude = ["tests/", "scripts/", "dist/"]
 

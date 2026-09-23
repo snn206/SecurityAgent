@@ -1,156 +1,146 @@
-# SecurityAgent — Version Registry
-# Each component has an independent semantic version.
-# Format: MAJOR.MINOR.PATCH (SemVer)
-# Artifact types: git-tag | git-commit | docker-tag | pypi | zip
-
-schema_version: "1"
-updated_at: "2026-09-23"
-
-# ─── System Core ──────────────────────────────────────────────────────────────
+schema_version: '1'
+updated_at: '2026-09-23'
 core:
-  version: "0.1.0"
+  version: 0.1.0
   artifact: git-tag
-  ref: "v0.1.0"
-  changelog: "registry/changelog/core.md"
-
-# ─── Agent Providers ──────────────────────────────────────────────────────────
+  ref: v0.1.0
+  changelog: registry/changelog/core.md
 providers:
   anthropic:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    package: "langchain-anthropic"
-    min_package_version: "0.3.0"
-    changelog: "registry/changelog/providers/anthropic.md"
-
+    package: langchain-anthropic
+    min_package_version: 0.3.0
+    changelog: registry/changelog/providers/anthropic.md
   openai:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    package: "langchain-openai"
-    min_package_version: "0.2.0"
-    changelog: "registry/changelog/providers/openai.md"
-
+    package: langchain-openai
+    min_package_version: 0.2.0
+    changelog: registry/changelog/providers/openai.md
   ollama:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    package: "langchain-ollama"
-    min_package_version: "0.2.0"
-    changelog: "registry/changelog/providers/ollama.md"
-
+    package: langchain-ollama
+    min_package_version: 0.2.0
+    changelog: registry/changelog/providers/ollama.md
   mistral:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    package: "langchain-mistralai"
-    min_package_version: "0.2.0"
-    changelog: "registry/changelog/providers/mistral.md"
-
+    package: langchain-mistralai
+    min_package_version: 0.2.0
+    changelog: registry/changelog/providers/mistral.md
   deepseek:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    package: "langchain-openai"  # OpenAI-compatible
-    changelog: "registry/changelog/providers/deepseek.md"
-
+    package: langchain-openai
+    changelog: registry/changelog/providers/deepseek.md
   nvidia_nim:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    package: "langchain-nvidia-ai-endpoints"
-    min_package_version: "0.3.0"
-    changelog: "registry/changelog/providers/nvidia_nim.md"
-
+    package: langchain-nvidia-ai-endpoints
+    min_package_version: 0.3.0
+    changelog: registry/changelog/providers/nvidia_nim.md
   qwen:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    package: "langchain-openai"  # OpenAI-compatible
-    changelog: "registry/changelog/providers/qwen.md"
-
+    package: langchain-openai
+    changelog: registry/changelog/providers/qwen.md
   opencode:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    package: "langchain-openai"  # OpenAI-compatible
-    changelog: "registry/changelog/providers/opencode.md"
-
+    package: langchain-openai
+    changelog: registry/changelog/providers/opencode.md
   kilo:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    package: "langchain-openai"  # OpenAI-compatible
-    changelog: "registry/changelog/providers/kilo.md"
-
-# ─── System Agents ────────────────────────────────────────────────────────────
+    package: langchain-openai
+    changelog: registry/changelog/providers/kilo.md
 agents:
   orchestrator:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    changelog: "registry/changelog/agents/orchestrator.md"
-
+    changelog: registry/changelog/agents/orchestrator.md
   planner:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    changelog: "registry/changelog/agents/planner.md"
-
+    changelog: registry/changelog/agents/planner.md
   reasoner:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    changelog: "registry/changelog/agents/reasoner.md"
-
+    changelog: registry/changelog/agents/reasoner.md
   researcher:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    changelog: "registry/changelog/agents/researcher.md"
-
+    changelog: registry/changelog/agents/researcher.md
   analyzer:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    changelog: "registry/changelog/agents/analyzer.md"
-
+    changelog: registry/changelog/agents/analyzer.md
   reporter:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    changelog: "registry/changelog/agents/reporter.md"
-
+    changelog: registry/changelog/agents/reporter.md
   tool_router:
-    version: "0.1.0"
+    version: 0.1.0
     artifact: git-commit
-    changelog: "registry/changelog/agents/tool_router.md"
-
-# ─── Tools ────────────────────────────────────────────────────────────────────
+    changelog: registry/changelog/agents/tool_router.md
 tools:
   nmap:
-    version: "7.95"
+    version: '7.95'
     artifact: docker-tag
-    install_cmd: "apt-get install -y nmap"
-    changelog: "registry/changelog/tools/nmap.md"
-
+    install_cmd: apt-get install -y nmap
+    changelog: registry/changelog/tools/nmap.md
   gobuster:
-    version: "3.6.0"
+    version: 3.6.0
     artifact: docker-tag
-    install_cmd: "apt-get install -y gobuster"
-    changelog: "registry/changelog/tools/gobuster.md"
-
+    install_cmd: apt-get install -y gobuster
+    changelog: registry/changelog/tools/gobuster.md
   sqlmap:
-    version: "1.8"
+    version: '1.8'
     artifact: docker-tag
-    install_cmd: "apt-get install -y sqlmap"
-    changelog: "registry/changelog/tools/sqlmap.md"
-
+    install_cmd: apt-get install -y sqlmap
+    changelog: registry/changelog/tools/sqlmap.md
   nikto:
-    version: "2.1.6"
+    version: 2.1.6
     artifact: docker-tag
-    install_cmd: "apt-get install -y nikto"
-    changelog: "registry/changelog/tools/nikto.md"
-
+    install_cmd: apt-get install -y nikto
+    changelog: registry/changelog/tools/nikto.md
   whois:
-    version: "5.5.23"
+    version: 5.5.23
     artifact: docker-tag
-    install_cmd: "apt-get install -y whois"
-    changelog: "registry/changelog/tools/whois.md"
-
+    install_cmd: apt-get install -y whois
+    changelog: registry/changelog/tools/whois.md
   curl:
-    version: "8.9"
+    version: '8.9'
     artifact: docker-tag
-    install_cmd: "apt-get install -y curl"
-    changelog: "registry/changelog/tools/curl.md"
-
-# ─── Packages (optional installable Python packages) ─────────────────────────
-packages: {}
-
-# ─── Extensions ───────────────────────────────────────────────────────────────
-extensions: {}
+    install_cmd: apt-get install -y curl
+    changelog: registry/changelog/tools/curl.md
+packages:
+  weasyprint:
+    version: '62.3'
+    artifact: pypi
+    package: weasyprint
+    description: PDF report generation and rendering engine
+    changelog: registry/changelog/packages/weasyprint.md
+  asyncpg:
+    version: 0.29.0
+    artifact: pypi
+    package: asyncpg
+    description: High performance asynchronous PostgreSQL client
+    changelog: registry/changelog/packages/asyncpg.md
+extensions:
+  burp_importer:
+    version: 0.1.0
+    artifact: zip
+    source: https://github.com/snn206/SecurityAgent/releases/download/v0.1.0/burp_importer.zip
+    description: Burp Suite XML export parser and vulnerability normalizer
+    changelog: registry/changelog/extensions/burp_importer.md
+  nuclei_templates:
+    version: 1.0.0
+    artifact: git-tag
+    ref: v1.0.0
+    description: Community vulnerability signatures and templates library
+    changelog: registry/changelog/extensions/nuclei_templates.md
+  test_plugin:
+    version: 1.0.0
