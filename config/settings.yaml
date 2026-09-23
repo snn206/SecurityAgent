@@ -1,0 +1,38 @@
+# SecurityAgent — Global Settings
+# Override any value via environment variable: SA_<KEY> (uppercase, nested with __)
+# Example: SA_SERVER__PORT=9090
+
+# ─── Server ──────────────────────────────────────────────────────────────────
+server:
+  host: "0.0.0.0"
+  port: 8080
+  debug: false
+  log_level: "INFO"        # DEBUG | INFO | WARNING | ERROR
+  cors_origins:
+    - "http://localhost:8080"
+    - "http://127.0.0.1:8080"
+
+# ─── Database ────────────────────────────────────────────────────────────────
+database:
+  url: "sqlite+aiosqlite:///./data/security_agent.db"
+  # For PostgreSQL: "postgresql+asyncpg://user:pass@localhost:5432/security_agent"
+  pool_size: 5
+  echo: false
+
+# ─── Storage ─────────────────────────────────────────────────────────────────
+storage:
+  artifact_dir: "./data/artifacts"
+  report_dir: "./data/reports"
+  max_artifact_size_mb: 100
+
+# ─── Execution ────────────────────────────────────────────────────────────────
+execution:
+  max_concurrent: 5
+  default_timeout_seconds: 300
+  history_retention_days: 90
+
+# ─── Logging ─────────────────────────────────────────────────────────────────
+logging:
+  format: "json"           # json | text
+  level: "INFO"
+  include_timestamps: true

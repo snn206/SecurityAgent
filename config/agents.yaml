@@ -1,0 +1,77 @@
+# SecurityAgent — Agent Definitions
+# Defines all system agents, their roles, provider assignments, and allowed tools.
+
+agents:
+  # ─── OrchestratorAgent ─────────────────────────────────────────────────────
+  orchestrator:
+    id: "orchestrator"
+    name: "Orchestrator"
+    description: "Root LangGraph agent. Receives tasks, routes to sub-agents."
+    planning_role: "planning"
+    allowed_tools: []           # Orchestrator delegates tool use to sub-agents
+    max_iterations: 50
+    interrupt_on_error: false
+
+  # ─── PlannerAgent ──────────────────────────────────────────────────────────
+  planner:
+    id: "planner"
+    name: "Planner"
+    description: "Produces a structured Plan (steps, agent assignments, tool selections)."
+    planning_role: "planning"
+    allowed_tools: []
+    max_iterations: 5
+
+  # ─── ReasonerAgent ─────────────────────────────────────────────────────────
+  reasoner:
+    id: "reasoner"
+    name: "Reasoner"
+    description: "Evaluates intermediate results and decides the next action."
+    planning_role: "reasoning"
+    allowed_tools: []
+    max_iterations: 10
+
+  # ─── ResearchAgent ─────────────────────────────────────────────────────────
+  researcher:
+    id: "researcher"
+    name: "Researcher"
+    description: "Passive recon, OSINT, web search. No active exploitation."
+    planning_role: "research"
+    allowed_tools:
+      - "whois"
+      - "curl"
+      - "shell"
+    max_iterations: 20
+
+  # ─── ToolRouterAgent ───────────────────────────────────────────────────────
+  tool_router:
+    id: "tool_router"
+    name: "ToolRouter"
+    description: "Selects the right tool for a plan step and sends to sandbox."
+    planning_role: "tool_calling"
+    allowed_tools:
+      - "nmap"
+      - "gobuster"
+      - "sqlmap"
+      - "nikto"
+      - "whois"
+      - "curl"
+      - "shell"
+    max_iterations: 30
+
+  # ─── AnalyzerAgent ─────────────────────────────────────────────────────────
+  analyzer:
+    id: "analyzer"
+    name: "Analyzer"
+    description: "Interprets tool output and extracts findings."
+    planning_role: "analysis"
+    allowed_tools: []
+    max_iterations: 10
+
+  # ─── ReporterAgent ─────────────────────────────────────────────────────────
+  reporter:
+    id: "reporter"
+    name: "Reporter"
+    description: "Aggregates findings and generates the final report."
+    planning_role: "reporting"
+    allowed_tools: []
+    max_iterations: 5

@@ -1,0 +1,156 @@
+# SecurityAgent — Version Registry
+# Each component has an independent semantic version.
+# Format: MAJOR.MINOR.PATCH (SemVer)
+# Artifact types: git-tag | git-commit | docker-tag | pypi | zip
+
+schema_version: "1"
+updated_at: "2026-09-23"
+
+# ─── System Core ──────────────────────────────────────────────────────────────
+core:
+  version: "0.1.0"
+  artifact: git-tag
+  ref: "v0.1.0"
+  changelog: "registry/changelog/core.md"
+
+# ─── Agent Providers ──────────────────────────────────────────────────────────
+providers:
+  anthropic:
+    version: "0.1.0"
+    artifact: git-commit
+    package: "langchain-anthropic"
+    min_package_version: "0.3.0"
+    changelog: "registry/changelog/providers/anthropic.md"
+
+  openai:
+    version: "0.1.0"
+    artifact: git-commit
+    package: "langchain-openai"
+    min_package_version: "0.2.0"
+    changelog: "registry/changelog/providers/openai.md"
+
+  ollama:
+    version: "0.1.0"
+    artifact: git-commit
+    package: "langchain-ollama"
+    min_package_version: "0.2.0"
+    changelog: "registry/changelog/providers/ollama.md"
+
+  mistral:
+    version: "0.1.0"
+    artifact: git-commit
+    package: "langchain-mistralai"
+    min_package_version: "0.2.0"
+    changelog: "registry/changelog/providers/mistral.md"
+
+  deepseek:
+    version: "0.1.0"
+    artifact: git-commit
+    package: "langchain-openai"  # OpenAI-compatible
+    changelog: "registry/changelog/providers/deepseek.md"
+
+  nvidia_nim:
+    version: "0.1.0"
+    artifact: git-commit
+    package: "langchain-nvidia-ai-endpoints"
+    min_package_version: "0.3.0"
+    changelog: "registry/changelog/providers/nvidia_nim.md"
+
+  qwen:
+    version: "0.1.0"
+    artifact: git-commit
+    package: "langchain-openai"  # OpenAI-compatible
+    changelog: "registry/changelog/providers/qwen.md"
+
+  opencode:
+    version: "0.1.0"
+    artifact: git-commit
+    package: "langchain-openai"  # OpenAI-compatible
+    changelog: "registry/changelog/providers/opencode.md"
+
+  kilo:
+    version: "0.1.0"
+    artifact: git-commit
+    package: "langchain-openai"  # OpenAI-compatible
+    changelog: "registry/changelog/providers/kilo.md"
+
+# ─── System Agents ────────────────────────────────────────────────────────────
+agents:
+  orchestrator:
+    version: "0.1.0"
+    artifact: git-commit
+    changelog: "registry/changelog/agents/orchestrator.md"
+
+  planner:
+    version: "0.1.0"
+    artifact: git-commit
+    changelog: "registry/changelog/agents/planner.md"
+
+  reasoner:
+    version: "0.1.0"
+    artifact: git-commit
+    changelog: "registry/changelog/agents/reasoner.md"
+
+  researcher:
+    version: "0.1.0"
+    artifact: git-commit
+    changelog: "registry/changelog/agents/researcher.md"
+
+  analyzer:
+    version: "0.1.0"
+    artifact: git-commit
+    changelog: "registry/changelog/agents/analyzer.md"
+
+  reporter:
+    version: "0.1.0"
+    artifact: git-commit
+    changelog: "registry/changelog/agents/reporter.md"
+
+  tool_router:
+    version: "0.1.0"
+    artifact: git-commit
+    changelog: "registry/changelog/agents/tool_router.md"
+
+# ─── Tools ────────────────────────────────────────────────────────────────────
+tools:
+  nmap:
+    version: "7.95"
+    artifact: docker-tag
+    install_cmd: "apt-get install -y nmap"
+    changelog: "registry/changelog/tools/nmap.md"
+
+  gobuster:
+    version: "3.6.0"
+    artifact: docker-tag
+    install_cmd: "apt-get install -y gobuster"
+    changelog: "registry/changelog/tools/gobuster.md"
+
+  sqlmap:
+    version: "1.8"
+    artifact: docker-tag
+    install_cmd: "apt-get install -y sqlmap"
+    changelog: "registry/changelog/tools/sqlmap.md"
+
+  nikto:
+    version: "2.1.6"
+    artifact: docker-tag
+    install_cmd: "apt-get install -y nikto"
+    changelog: "registry/changelog/tools/nikto.md"
+
+  whois:
+    version: "5.5.23"
+    artifact: docker-tag
+    install_cmd: "apt-get install -y whois"
+    changelog: "registry/changelog/tools/whois.md"
+
+  curl:
+    version: "8.9"
+    artifact: docker-tag
+    install_cmd: "apt-get install -y curl"
+    changelog: "registry/changelog/tools/curl.md"
+
+# ─── Packages (optional installable Python packages) ─────────────────────────
+packages: {}
+
+# ─── Extensions ───────────────────────────────────────────────────────────────
+extensions: {}

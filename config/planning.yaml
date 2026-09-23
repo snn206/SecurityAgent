@@ -1,0 +1,87 @@
+# SecurityAgent — Planning / Thinking / Reasoning Configuration
+# Maps each planning role to a provider and model.
+# Roles can share a provider or use completely different ones.
+# This config is loaded at startup; changing it requires a restart.
+
+# ─── Role → Provider/Model mapping ───────────────────────────────────────────
+roles:
+  # Planning: produces the high-level Plan from a user request
+  planning:
+    provider: "anthropic"
+    model: "claude-opus-4-5"
+    strategy: "chain_of_thought"   # chain_of_thought | react | tree_of_thought
+    temperature: 0.2
+    max_tokens: 4096
+    reasoning_enabled: true
+
+  # Reasoning: evaluates intermediate results, decides next step
+  reasoning:
+    provider: "anthropic"
+    model: "claude-opus-4-5"
+    strategy: "tree_of_thought"
+    temperature: 0.1
+    max_tokens: 8192
+    reasoning_enabled: true
+
+  # Research: OSINT, passive recon, web search
+  research:
+    provider: "openai"
+    model: "gpt-4o"
+    strategy: "react"
+    temperature: 0.3
+    max_tokens: 4096
+    reasoning_enabled: false
+
+  # Execution: direct execution of a known plan step
+  execution:
+    provider: "anthropic"
+    model: "claude-sonnet-4-5"
+    strategy: "direct"
+    temperature: 0.0
+    max_tokens: 2048
+    reasoning_enabled: false
+
+  # Tool calling: select and invoke tools
+  tool_calling:
+    provider: "anthropic"
+    model: "claude-sonnet-4-5"
+    strategy: "direct"
+    temperature: 0.0
+    max_tokens: 2048
+    reasoning_enabled: false
+
+  # Analysis: interpret tool output and extract findings
+  analysis:
+    provider: "anthropic"
+    model: "claude-opus-4-5"
+    strategy: "chain_of_thought"
+    temperature: 0.2
+    max_tokens: 8192
+    reasoning_enabled: true
+
+  # Reporting: generate the final report
+  reporting:
+    provider: "anthropic"
+    model: "claude-sonnet-4-5"
+    strategy: "direct"
+    temperature: 0.3
+    max_tokens: 16384
+    reasoning_enabled: false
+
+# ─── Strategy Definitions ─────────────────────────────────────────────────────
+strategies:
+  chain_of_thought:
+    description: "Step-by-step reasoning before answering"
+    system_prompt_prefix: "Think step by step before responding."
+
+  react:
+    description: "Interleave Thought / Action / Observation cycles"
+    system_prompt_prefix: "Use Thought/Action/Observation format."
+
+  tree_of_thought:
+    description: "Explore multiple reasoning branches, select best"
+    system_prompt_prefix: "Consider multiple approaches. Evaluate each. Choose the best."
+
+  direct:
+    description: "Direct response without extended reasoning"
+    system_prompt_prefix: ""

@@ -1,0 +1,88 @@
+# SecurityAgent — Tool Catalog
+# All tools execute inside Docker (Kali Linux sandbox).
+# command_template: shell command with {target} and other placeholders.
+
+tools:
+  nmap:
+    id: "nmap"
+    name: "Nmap"
+    description: "Network port scanner and service/OS detection"
+    category: "recon"
+    command_template: "nmap {flags} {target}"
+    default_flags: "-sV -sC -T4"
+    allowed_flags:
+      - "-sV"   # service version
+      - "-sC"   # default scripts
+      - "-sU"   # UDP scan
+      - "-p"    # port range
+      - "-A"    # aggressive
+      - "-O"    # OS detection
+      - "-T1"
+      - "-T2"
+      - "-T3"
+      - "-T4"
+      - "-oN"   # normal output
+      - "-oX"   # XML output
+    timeout_seconds: 300
+    output_format: "text"
+
+  gobuster:
+    id: "gobuster"
+    name: "Gobuster"
+    description: "Directory/file bruteforce enumeration"
+    category: "enumeration"
+    command_template: "gobuster {mode} -u {target} -w {wordlist} {flags}"
+    default_flags: ""
+    timeout_seconds: 300
+    output_format: "text"
+
+  sqlmap:
+    id: "sqlmap"
+    name: "SQLMap"
+    description: "Automated SQL injection detection and exploitation"
+    category: "exploitation"
+    command_template: "sqlmap -u {target} {flags} --batch"
+    default_flags: "--level=2 --risk=1"
+    timeout_seconds: 600
+    output_format: "text"
+
+  nikto:
+    id: "nikto"
+    name: "Nikto"
+    description: "Web server vulnerability scanner"
+    category: "scanning"
+    command_template: "nikto -h {target} {flags}"
+    default_flags: ""
+    timeout_seconds: 300
+    output_format: "text"
+
+  whois:
+    id: "whois"
+    name: "Whois"
+    description: "Domain/IP registration information lookup"
+    category: "recon"
+    command_template: "whois {target}"
+    default_flags: ""
+    timeout_seconds: 30
+    output_format: "text"
+
+  curl:
+    id: "curl"
+    name: "curl"
+    description: "HTTP request tool for web recon and API testing"
+    category: "recon"
+    command_template: "curl {flags} {target}"
+    default_flags: "-sS -L --max-time 30"
+    timeout_seconds: 60
+    output_format: "text"
+
+  shell:
+    id: "shell"
+    name: "Shell"
+    description: "Generic shell command execution in sandbox"
+    category: "utility"
+    command_template: "{command}"
+    default_flags: ""
+    timeout_seconds: 120
+    output_format: "text"
+    restricted: true    # requires explicit allow-list approval per task

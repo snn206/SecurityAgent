@@ -1,0 +1,117 @@
+[project]
+name = "security-agent"
+version = "0.1.0"
+description = "Modular Multi-Agent security research system built on LangGraph and Deep Agents"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "SecurityAgent Team" }]
+keywords = ["security", "agents", "langgraph", "pentest", "multi-agent"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Security",
+]
+
+[project.urls]
+Repository = "https://github.com/snn206/SecurityAgent"
+Changelog = "https://github.com/snn206/SecurityAgent/blob/main/CHANGELOG.md"
+
+[project.scripts]
+security-agent = "security_agent.api.app:main"
+sa-update = "scripts.update:main"
+
+[project.dependencies]
+# LangChain / LangGraph
+langgraph = ">=0.2"
+langchain-core = ">=0.3"
+langchain-anthropic = ">=0.3"
+langchain-openai = ">=0.2"
+langchain-ollama = ">=0.2"
+langchain-mistralai = ">=0.2"
+langchain-community = ">=0.3"
+
+# API
+fastapi = ">=0.115"
+uvicorn = { version = ">=0.32", extras = ["standard"] }
+websockets = ">=13"
+sse-starlette = ">=2"
+httpx = ">=0.27"
+
+# Data / Config
+pydantic = ">=2.8"
+pydantic-settings = ">=2.5"
+pyyaml = ">=6"
+python-dotenv = ">=1"
+jsonschema = ">=4"
+
+# Database (execution history)
+sqlalchemy = { version = ">=2", extras = ["asyncio"] }
+aiosqlite = ">=0.20"
+
+# Reports
+jinja2 = ">=3"
+markdown = ">=3"
+weasyprint = ">=62"
+
+# Docker SDK
+docker = ">=7"
+
+# Utilities
+tenacity = ">=9"
+structlog = ">=24"
+rich = ">=13"
+typer = ">=0.12"
+anyio = ">=4"
+
+[project.optional-dependencies]
+postgres = ["asyncpg>=0.29", "psycopg[binary]>=3"]
+pdf = ["weasyprint>=62"]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+    "pytest-httpx>=0.30",
+    "mypy>=1.11",
+    "ruff>=0.6",
+    "pre-commit>=3",
+    "types-pyyaml>=6",
+    "coverage[toml]>=7",
+    "httpx>=0.27",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/security_agent"]
+
+[tool.ruff]
+src = ["src"]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+exclude = ["tests/", "scripts/"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["src/security_agent"]
+omit = ["*/tests/*", "*/ui/*"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "def __repr__", "raise NotImplementedError"]

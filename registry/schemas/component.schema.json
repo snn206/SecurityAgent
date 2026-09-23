@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ComponentVersionEntry",
+  "description": "Schema for a single component version entry in registry/versions.yaml",
+  "type": "object",
+  "required": ["version", "artifact"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?(\\+[a-zA-Z0-9.]+)?$",
+      "description": "Semantic version string (MAJOR.MINOR.PATCH)"
+    },
+    "artifact": {
+      "type": "string",
+      "enum": ["git-tag", "git-commit", "docker-tag", "pypi", "zip"],
+      "description": "Type of release artifact"
+    },
+    "ref": {
+      "type": "string",
+      "description": "Git tag, commit SHA, Docker tag, or PyPI version ref"
+    },
+    "package": {
+      "type": "string",
+      "description": "PyPI package name (for provider components)"
+    },
+    "min_package_version": {
+      "type": "string",
+      "description": "Minimum compatible PyPI package version"
+    },
+    "install_cmd": {
+      "type": "string",
+      "description": "Shell command to install this component (for tools in Docker)"
+    },
+    "changelog": {
+      "type": "string",
+      "description": "Relative path to this component's changelog file"
+    },
+    "deprecated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this component version is deprecated"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional free-form notes"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,183 @@
+# SecurityAgent — Provider Configuration
+# API keys are NEVER stored here; load from environment variables.
+# Syntax: ${ENV_VAR_NAME}
+#
+# Capabilities flags:
+#   tool_calling: supports function/tool calling
+#   streaming:    supports streaming responses
+#   reasoning:    has extended thinking / o1-style reasoning
+#   vision:       supports image input
+
+default_provider: "anthropic"
+
+providers:
+  # ─── Anthropic (Claude) ────────────────────────────────────────────────────
+  anthropic:
+    enabled: true
+    type: "anthropic"
+    api_key: "${ANTHROPIC_API_KEY}"
+    default_model: "claude-opus-4-5"
+    models:
+      - id: "claude-opus-4-5"
+        context_window: 200000
+        reasoning: true
+      - id: "claude-sonnet-4-5"
+        context_window: 200000
+        reasoning: true
+      - id: "claude-haiku-3-5"
+        context_window: 200000
+        reasoning: false
+    capabilities:
+      tool_calling: true
+      streaming: true
+      reasoning: true
+      vision: true
+
+  # ─── OpenAI ────────────────────────────────────────────────────────────────
+  openai:
+    enabled: true
+    type: "openai"
+    api_key: "${OPENAI_API_KEY}"
+    default_model: "gpt-4o"
+    models:
+      - id: "gpt-4o"
+        context_window: 128000
+        reasoning: false
+      - id: "o3"
+        context_window: 200000
+        reasoning: true
+      - id: "o4-mini"
+        context_window: 200000
+        reasoning: true
+    capabilities:
+      tool_calling: true
+      streaming: true
+      reasoning: true   # via o-series models
+      vision: true
+
+  # ─── Ollama (local) ────────────────────────────────────────────────────────
+  ollama:
+    enabled: true
+    type: "ollama"
+    base_url: "${OLLAMA_BASE_URL:-http://localhost:11434}"
+    default_model: "qwen2.5:32b"
+    models:
+      - id: "qwen2.5:32b"
+        context_window: 32768
+        reasoning: false
+      - id: "llama3.3:70b"
+        context_window: 128000
+        reasoning: false
+      - id: "deepseek-r1:32b"
+        context_window: 65536
+        reasoning: true
+    capabilities:
+      tool_calling: true      # model-dependent
+      streaming: true
+      reasoning: false
+      vision: false
+
+  # ─── Mistral ───────────────────────────────────────────────────────────────
+  mistral:
+    enabled: true
+    type: "mistral"
+    api_key: "${MISTRAL_API_KEY}"
+    default_model: "mistral-large-latest"
+    models:
+      - id: "mistral-large-latest"
+        context_window: 131072
+        reasoning: false
+      - id: "codestral-latest"
+        context_window: 262144
+        reasoning: false
+    capabilities:
+      tool_calling: true
+      streaming: true
+      reasoning: false
+      vision: false
+
+  # ─── DeepSeek ──────────────────────────────────────────────────────────────
+  deepseek:
+    enabled: true
+    type: "openai_compatible"   # uses OpenAI-compatible API
+    api_key: "${DEEPSEEK_API_KEY}"
+    base_url: "${DEEPSEEK_BASE_URL:-https://api.deepseek.com/v1}"
+    default_model: "deepseek-reasoner"
+    models:
+      - id: "deepseek-chat"
+        context_window: 65536
+        reasoning: false
+      - id: "deepseek-reasoner"
+        context_window: 65536
+        reasoning: true
+    capabilities:
+      tool_calling: true
+      streaming: true
+      reasoning: true
+      vision: false
+
+  # ─── NVIDIA NIM ─────────────────────────────────────────────────────────────
+  nvidia_nim:
+    enabled: false   # enable when API key available
+    type: "nvidia_nim"
+    api_key: "${NVIDIA_NIM_API_KEY}"
+    base_url: "${NVIDIA_NIM_BASE_URL:-https://integrate.api.nvidia.com/v1}"
+    default_model: "meta/llama-3.3-70b-instruct"
+    models:
+      - id: "meta/llama-3.3-70b-instruct"
+        context_window: 128000
+        reasoning: false
+      - id: "nvidia/llama-3.1-nemotron-ultra-253b-v1"
+        context_window: 128000
+        reasoning: true
+    capabilities:
+      tool_calling: true
+      streaming: true
+      reasoning: false
+      vision: false
+
+  # ─── Qwen ──────────────────────────────────────────────────────────────────
+  qwen:
+    enabled: false
+    type: "openai_compatible"
+    api_key: "${QWEN_API_KEY}"
+    base_url: "${QWEN_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}"
+    default_model: "qwen-max"
+    models:
+      - id: "qwen-max"
+        context_window: 32768
+        reasoning: false
+      - id: "qwq-32b"
+        context_window: 131072
+        reasoning: true
+    capabilities:
+      tool_calling: true
+      streaming: true
+      reasoning: true
+      vision: false
+
+  # ─── OpenCode ──────────────────────────────────────────────────────────────
+  opencode:
+    enabled: false
+    type: "openai_compatible"
+    api_key: "${OPENCODE_API_KEY}"
+    base_url: "https://api.opencode.ai/v1"
+    default_model: "opencode-default"
+    capabilities:
+      tool_calling: true
+      streaming: true
+      reasoning: false
+      vision: false
+
+  # ─── Kilo ──────────────────────────────────────────────────────────────────
+  kilo:
+    enabled: false
+    type: "openai_compatible"
+    api_key: "${KILO_API_KEY}"
+    base_url: "https://api.kilo.ai/v1"
+    default_model: "kilo-default"
+    capabilities:
+      tool_calling: true
+      streaming: true
+      reasoning: false
+      vision: false

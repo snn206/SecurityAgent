@@ -1,0 +1,51 @@
+# SecurityAgent — Sandbox Configuration
+# Docker Kali Linux sandbox settings.
+
+sandbox:
+  # Docker image to use as the execution sandbox
+  image: "security-agent-sandbox:latest"
+  container_name_prefix: "sa-sandbox"
+
+  # Resource limits
+  resources:
+    cpu_count: 2
+    mem_limit: "2g"
+    memswap_limit: "2g"
+    ulimits:
+      - name: "nofile"
+        soft: 1024
+        hard: 2048
+
+  # Networking — 'none' for full isolation, 'bridge' for internet access
+  # Use 'bridge' only when tools need internet (nmap external targets, etc.)
+  network_mode: "bridge"
+
+  # Volumes mounted into the container
+  volumes:
+    # Read-only wordlists
+    - host: "./data/wordlists"
+      container: "/wordlists"
+      mode: "ro"
+    # Output artifacts written by tools
+    - host: "./data/artifacts"
+      container: "/artifacts"
+      mode: "rw"
+
+  # Working directory inside container
+  workdir: "/workspace"
+
+  # Default execution timeout (seconds) — overridden per-tool
+  default_timeout: 300
+
+  # Container lifecycle
+  auto_remove: true       # Remove container after task completes
+  reuse_container: false  # Always create a fresh container per task
+
+  # Security
+  privileged: false
+  read_only_rootfs: false
+  cap_drop:
+    - "ALL"
+  cap_add:
+    - "NET_RAW"      # needed for nmap
+    - "NET_ADMIN"    # needed for packet capture

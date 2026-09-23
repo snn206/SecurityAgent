@@ -1,0 +1,11 @@
+{
+  "plan_id": "test-plan-001",
+  "objective": "Port scan and service enumeration",
+  "scope": "192.168.1.100",
+  "steps": [
+    {"step_id": "s1", "description": "Run nmap scan", "agent_id": "tool_router", "tools": ["nmap"], "depends_on": []},
+    {"step_id": "s2", "description": "Analyze results", "agent_id": "analyzer", "tools": [], "depends_on": ["s1"]},
+    {"step_id": "s3", "description": "Generate report", "agent_id": "reporter", "tools": [], "depends_on": ["s2"]}
+  ],
+  "constraints": ["No active exploitation", "Passive reconnaissance only"]
+}

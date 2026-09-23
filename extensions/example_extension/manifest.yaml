@@ -1,0 +1,9 @@
+id: "example_extension"
+name: "Example Extension"
+version: "0.1.0"
+description: "A reference extension showing how to hook into SecurityAgent events"
+author: "SecurityAgent Team"
+hooks:
+  - "on_task_start"
+  - "on_report_generated"
+dependencies: []

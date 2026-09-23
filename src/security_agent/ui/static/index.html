@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SecurityAgent — Multi-Agent Security Research Platform" />
+  <title>SecurityAgent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">⚔️</span>
+          <span class="logo-text">SecurityAgent</span>
+        </div>
+        <div class="version-badge">v0.1.0</div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" id="nav-tasks" onclick="showPanel('tasks')">
+          <span class="nav-icon">🎯</span> Tasks
+        </button>
+        <button class="nav-item" id="nav-history" onclick="showPanel('history')">
+          <span class="nav-icon">📜</span> History
+        </button>
+        <button class="nav-item" id="nav-providers" onclick="showPanel('providers')">
+          <span class="nav-icon">🤖</span> Providers
+        </button>
+        <button class="nav-item" id="nav-tools" onclick="showPanel('tools')">
+          <span class="nav-icon">🔧</span> Tools
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="status-indicator" id="api-status">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Connecting…</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Tasks Panel -->
+      <section class="panel active" id="panel-tasks">
+        <div class="panel-header">
+          <h1>New Security Task</h1>
+          <p class="panel-subtitle">Describe your security research objective</p>
+        </div>
+
+        <form class="task-form" id="task-form" onsubmit="submitTask(event)">
+          <div class="form-group">
+            <label for="user-request">Objective</label>
+            <textarea id="user-request" rows="3"
+              placeholder="e.g. Perform a full port scan and service enumeration on 192.168.1.0/24"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="scope">Target Scope</label>
+              <input type="text" id="scope" placeholder="192.168.1.100 or https://target.com" />
+            </div>
+            <div class="form-group">
+              <label for="provider-select">Provider</label>
+              <select id="provider-select">
+                <option value="">Default</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" id="submit-btn">
+            <span class="btn-icon">▶</span> Run Task
+          </button>
+        </form>
+
+        <!-- Execution View -->
+        <div class="execution-view" id="execution-view" style="display:none">
+          <div class="exec-header">
+            <div class="exec-meta">
+              <span class="exec-id" id="exec-id-display"></span>
+              <span class="exec-status" id="exec-status-badge">pending</span>
+            </div>
+            <button class="btn-ghost" onclick="clearExecution()">✕ Clear</button>
+          </div>
+
+          <!-- Live timeline -->
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </section>
+
+      <!-- History Panel -->
+      <section class="panel" id="panel-history">
+        <div class="panel-header">
+          <h1>Execution History</h1>
+          <button class="btn-ghost" onclick="loadHistory()">↻ Refresh</button>
+        </div>
+        <div class="table-container">
+          <table class="data-table" id="history-table">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Scope</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody">
+              <tr><td colspan="5" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Providers Panel -->
+      <section class="panel" id="panel-providers">
+        <div class="panel-header">
+          <h1>Provider Status</h1>
+        </div>
+        <div class="card-grid" id="providers-grid">
+          <div class="empty-state">Loading providers…</div>
+        </div>
+      </section>
+
+      <!-- Tools Panel -->
+      <section class="panel" id="panel-tools">
+        <div class="panel-header">
+          <h1>Available Tools</h1>
+        </div>
+        <div class="card-grid" id="tools-grid">
+          <div class="empty-state">Loading tools…</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

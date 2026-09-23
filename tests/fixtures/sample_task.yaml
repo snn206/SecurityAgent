@@ -1,0 +1,4 @@
+user_request: "Perform a port scan and service enumeration on the target host"
+scope: "192.168.1.100"
+provider: "anthropic"
+model: "claude-opus-4-5"

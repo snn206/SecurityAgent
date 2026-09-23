@@ -1,0 +1,53 @@
+services:
+  # ── API Server ─────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    image: security-agent-api:latest
+    container_name: sa-api
+    ports:
+      - "8080:8080"
+    environment:
+      - SA_PORT=8080
+      - SA_LOG_LEVEL=INFO
+      - SA_DATABASE_URL=sqlite+aiosqlite:///./data/security_agent.db
+      - SA_SANDBOX_IMAGE=security-agent-sandbox:latest
+      # Provider API keys (set in .env file)
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+    volumes:
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock   # Docker-in-Docker for sandbox
+      - ../config:/app/config:ro
+      - ../registry:/app/registry:ro
+    restart: unless-stopped
+    depends_on: []
+    networks:
+      - sa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Sandbox ────────────────────────────────────────────────────────────────
+  # The sandbox is NOT a persistent service — it's spun up per-task.
+  # This entry is for pre-building the image only.
+  sandbox:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.sandbox
+    image: security-agent-sandbox:latest
+    profiles: ["build-only"]    # Only used for build, not run
+    command: ["echo", "Sandbox image built"]
+
+networks:
+  sa-network:
+    driver: bridge
+
+volumes:
+  data:
