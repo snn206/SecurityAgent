@@ -6,6 +6,7 @@ Strictly enforces:
 - Up to 2 Child Agents per Parent ("Con")
 - Global maximum limit of 10 agents active across the system.
 """
+
 from __future__ import annotations
 
 import time
@@ -15,8 +16,8 @@ from typing import Any
 
 class AgentRole:
     COORDINATOR = "coordinator"  # Ông (1 max)
-    PARENT = "parent"            # Cha (3 max)
-    CHILD = "child"              # Con (2 per parent max)
+    PARENT = "parent"  # Cha (3 max)
+    CHILD = "child"  # Con (2 per parent max)
 
 
 class HierarchyManager:
@@ -44,9 +45,21 @@ class HierarchyManager:
 
     def _init_default_parents(self) -> None:
         default_specs = [
-            ("parent-recon", "Recon Lead Agent", "Reconnaissance, surface mapping, DNS and port scanning"),
-            ("parent-vuln", "Vulnerability Lead Agent", "Web application audit, service inspection, CVE correlation"),
-            ("parent-exploit", "Exploit Lead Agent", "PoC validation, sandbox verification, payload verification"),
+            (
+                "parent-recon",
+                "Recon Lead Agent",
+                "Reconnaissance, surface mapping, DNS and port scanning",
+            ),
+            (
+                "parent-vuln",
+                "Vulnerability Lead Agent",
+                "Web application audit, service inspection, CVE correlation",
+            ),
+            (
+                "parent-exploit",
+                "Exploit Lead Agent",
+                "PoC validation, sandbox verification, payload verification",
+            ),
         ]
         for pid, name, domain in default_specs:
             self.parents[pid] = {
@@ -133,7 +146,9 @@ class HierarchyManager:
         tree_parents = []
         for pid, pdata in self.parents.items():
             p_copy = dict(pdata)
-            p_children = [self.children[cid] for cid in pdata["children_ids"] if cid in self.children]
+            p_children = [
+                self.children[cid] for cid in pdata["children_ids"] if cid in self.children
+            ]
             p_copy["children"] = p_children
             tree_parents.append(p_copy)
 

@@ -1,11 +1,12 @@
 """Abstract base class for all SecurityAgent agents."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Any
 
-from .state import AgentState
 from .events import EventBus
+from .state import AgentState
 
 
 class BaseAgent(ABC):

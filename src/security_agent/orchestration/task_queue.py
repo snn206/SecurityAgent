@@ -3,12 +3,14 @@
 Limits concurrent active parent tasks to 3. Excess tasks are held in an
 ordered priority queue and dispatched immediately when a parent becomes idle.
 """
+
 from __future__ import annotations
 
 import asyncio
 import time
 import uuid
-from typing import Any, Callable, Coroutine
+from collections.abc import Callable, Coroutine
+from typing import Any
 
 
 class ParentTaskQueue:
@@ -24,7 +26,9 @@ class ParentTaskQueue:
         self._lock = asyncio.Lock()
         self._listeners: list[Callable[[dict[str, Any]], Coroutine[Any, Any, None]]] = []
 
-    def on_task_dispatched(self, listener: Callable[[dict[str, Any]], Coroutine[Any, Any, None]]) -> None:
+    def on_task_dispatched(
+        self, listener: Callable[[dict[str, Any]], Coroutine[Any, Any, None]]
+    ) -> None:
         """Register a callback when a task is dispatched from the queue."""
         self._listeners.append(listener)
 
@@ -70,7 +74,9 @@ class ParentTaskQueue:
 
             return task
 
-    async def complete_task(self, task_id: str, result: dict[str, Any] | None = None) -> dict[str, Any] | None:
+    async def complete_task(
+        self, task_id: str, result: dict[str, Any] | None = None
+    ) -> dict[str, Any] | None:
         """Complete an active parent task and dispatch the next queued task if available."""
         async with self._lock:
             if task_id not in self._active_tasks:
@@ -87,7 +93,9 @@ class ParentTaskQueue:
                 next_task = self._queue.pop(0)
                 slot_index = len(self._active_tasks) + 1
                 next_task["status"] = "active"
-                next_task["assigned_parent"] = f"parent-{next_task.get('domain', 'lead')}-{slot_index}"
+                next_task["assigned_parent"] = (
+                    f"parent-{next_task.get('domain', 'lead')}-{slot_index}"
+                )
                 next_task["started_at"] = time.time()
                 self._active_tasks[next_task["id"]] = next_task
                 await self._notify_dispatch(next_task)

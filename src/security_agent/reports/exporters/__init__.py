@@ -1,4 +1,5 @@
 """Report exporters — Markdown, JSON, HTML, PDF."""
+
 from __future__ import annotations
 
 import json
@@ -96,7 +97,7 @@ class HTMLExporter:
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Security Assessment Report — {report.get('execution_id', '')}</title>
+<title>Security Assessment Report — {report.get("execution_id", "")}</title>
 <style>
   body {{ font-family: 'Segoe UI', sans-serif; max-width: 960px; margin: 40px auto; padding: 0 20px; }}
   pre {{ background: #1d1d2e; color: #a8dadc; padding: 16px; border-radius: 6px; overflow-x: auto; }}
@@ -110,6 +111,7 @@ class PDFExporter:
     def export(self, report: dict[str, Any], output_path: Path) -> Path:
         try:
             import weasyprint  # type: ignore
+
             html = HTMLExporter().export(report)
             weasyprint.HTML(string=html).write_pdf(str(output_path))
             return output_path

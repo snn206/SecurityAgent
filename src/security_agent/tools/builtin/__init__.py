@@ -1,7 +1,8 @@
 """Built-in security tools."""
+
 from __future__ import annotations
-from typing import Any
-from security_agent.core.base_tool import BaseTool, ToolConfig, ToolInput, ToolOutput
+
+from security_agent.core.base_tool import BaseTool, ToolInput, ToolOutput
 from security_agent.sandbox.executor import CommandExecutor
 
 
@@ -35,10 +36,29 @@ class SandboxTool(BaseTool):
         )
 
 
-class NmapTool(SandboxTool): pass
-class GobusterTool(SandboxTool): pass
-class SqlmapTool(SandboxTool): pass
-class NiktoTool(SandboxTool): pass
-class WhoisTool(SandboxTool): pass
-class CurlTool(SandboxTool): pass
-class ShellTool(SandboxTool): pass
+class NmapTool(SandboxTool):
+    pass
+
+
+class GobusterTool(SandboxTool):
+    pass
+
+
+class SqlmapTool(SandboxTool):
+    pass
+
+
+class NiktoTool(SandboxTool):
+    pass
+
+
+class WhoisTool(SandboxTool):
+    pass
+
+
+class CurlTool(SandboxTool):
+    pass
+
+
+class ShellTool(SandboxTool):
+    pass

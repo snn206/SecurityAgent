@@ -1,19 +1,27 @@
 """FastAPI application factory for SecurityAgent."""
+
 from __future__ import annotations
 
-import asyncio
-import uuid
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from security_agent.api.routers import tasks, executions, reports, providers, tools, health, memory, hierarchy
-from security_agent.api.websocket.manager import ConnectionManager
 from security_agent.api.middleware.logging import LoggingMiddleware
+from security_agent.api.routers import (
+    executions,
+    health,
+    hierarchy,
+    memory,
+    providers,
+    reports,
+    tasks,
+    tools,
+)
+from security_agent.api.websocket.manager import ConnectionManager
 from security_agent.execution.history import HistoryStore
 
 # Module-level singletons
@@ -79,10 +87,12 @@ def create_app() -> FastAPI:
 
     # ── WebSocket ──────────────────────────────────────────────────────────────
     from security_agent.api.websocket.events import ws_router
+
     app.include_router(ws_router)
 
     # ── SSE ────────────────────────────────────────────────────────────────────
     from security_agent.api.sse.stream import sse_router
+
     app.include_router(sse_router)
 
     # ── Static UI ─────────────────────────────────────────────────────────────
@@ -97,6 +107,7 @@ def create_app() -> FastAPI:
 
 def main() -> None:
     import uvicorn
+
     uvicorn.run(
         "security_agent.api.app:create_app",
         factory=True,

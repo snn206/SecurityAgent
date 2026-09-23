@@ -1,8 +1,8 @@
 """Tool registry — loads tools from config/tools.yaml."""
+
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 import yaml
 
@@ -17,10 +17,19 @@ class ToolRegistry:
         self._tools: dict[str, BaseTool] = {}
         self._configs: dict[str, ToolConfig] = {}
         from security_agent.core.paths import get_config_path
+
         self._config_path = config_path or get_config_path("tools.yaml")
 
     def load(self) -> None:
-        from security_agent.tools.builtin import NmapTool, GobusterTool, SqlmapTool, NiktoTool, WhoisTool, CurlTool, ShellTool
+        from security_agent.tools.builtin import (
+            CurlTool,
+            GobusterTool,
+            NiktoTool,
+            NmapTool,
+            ShellTool,
+            SqlmapTool,
+            WhoisTool,
+        )
 
         if not self._config_path.exists():
             return
@@ -29,8 +38,13 @@ class ToolRegistry:
             raw = yaml.safe_load(f)
 
         tool_classes = {
-            "nmap": NmapTool, "gobuster": GobusterTool, "sqlmap": SqlmapTool,
-            "nikto": NiktoTool, "whois": WhoisTool, "curl": CurlTool, "shell": ShellTool,
+            "nmap": NmapTool,
+            "gobuster": GobusterTool,
+            "sqlmap": SqlmapTool,
+            "nikto": NiktoTool,
+            "whois": WhoisTool,
+            "curl": CurlTool,
+            "shell": ShellTool,
         }
 
         for tool_id, cfg in raw.get("tools", {}).items():

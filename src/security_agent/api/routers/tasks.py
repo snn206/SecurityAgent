@@ -1,15 +1,15 @@
 """Tasks router — submit and monitor tasks."""
+
 from __future__ import annotations
 
 import uuid
-import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
 
-from security_agent.execution.history import HistoryStore, get_store  # type: ignore[attr-defined]
+from security_agent.execution.history import get_store  # type: ignore[attr-defined]
 from security_agent.graph.builder import build_graph
 from security_agent.graph.nodes import get_event_bus
 
@@ -32,8 +32,8 @@ class TaskResponse(BaseModel):
 
 async def _run_graph(execution_id: str, task_id: str, request: TaskRequest) -> None:
     """Background task: run the LangGraph workflow."""
-    from security_agent.execution.history import get_store
     from security_agent.api.app import get_ws_manager
+    from security_agent.execution.history import get_store
 
     store = get_store()
     bus = get_event_bus()
@@ -60,12 +60,15 @@ async def _run_graph(execution_id: str, task_id: str, request: TaskRequest) -> N
             "artifacts": [],
             "completed_steps": [],
         }
-        async for event in graph.astream(initial_state, config={"configurable": {"thread_id": execution_id}}):
+        async for event in graph.astream(
+            initial_state, config={"configurable": {"thread_id": execution_id}}
+        ):
             pass  # Events emitted via EventBus
-    except Exception as exc:
+    except Exception:
         await store.update_execution(
-            execution_id, status="failed",
-            completed_at=datetime.now(timezone.utc),
+            execution_id,
+            status="failed",
+            completed_at=datetime.now(UTC),
         )
     finally:
         bus.unsubscribe(broadcast_event, execution_id=execution_id)
@@ -80,7 +83,7 @@ async def create_task(
     store = get_store()
     task_id = str(uuid.uuid4())
     execution_id = str(uuid.uuid4())
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     await store.create_execution(
         execution_id=execution_id,

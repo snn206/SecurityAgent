@@ -1,4 +1,5 @@
 """Conditional edge functions for the SecurityAgent LangGraph."""
+
 from __future__ import annotations
 
 from security_agent.core.state import AgentState

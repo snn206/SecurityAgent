@@ -1,4 +1,5 @@
 """WebSocket connection manager for real-time execution event broadcasting."""
+
 from __future__ import annotations
 
 import json

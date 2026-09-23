@@ -1,9 +1,11 @@
 """JEV Judge: Synthesizes verification and evaluation to render operational verdicts."""
+
 from __future__ import annotations
 
 from typing import Any
-from security_agent.jev.verifier import Verifier
+
 from security_agent.jev.evaluator import Evaluator
+from security_agent.jev.verifier import Verifier
 
 
 class Verdict:
@@ -16,7 +18,9 @@ class Verdict:
 class Judge:
     """Judges the outcome of an agent step and determines the operational next action."""
 
-    def __init__(self, verifier: Verifier | None = None, evaluator: Evaluator | None = None) -> None:
+    def __init__(
+        self, verifier: Verifier | None = None, evaluator: Evaluator | None = None
+    ) -> None:
         self.verifier = verifier or Verifier()
         self.evaluator = evaluator or Evaluator()
 
@@ -49,11 +53,15 @@ class Judge:
             verdict = Verdict.PASS
             rationale = "Step produced verified security telemetry meeting standards."
             suggested_action = "PROCEED_TO_NEXT_STEP"
-        elif not verified and ("timed out" in tool_output.lower() or "connection refused" in tool_output.lower()):
+        elif not verified and (
+            "timed out" in tool_output.lower() or "connection refused" in tool_output.lower()
+        ):
             verdict = Verdict.RETRY
             rationale = "Network timeout or rate-limiting detected. Recommend retry with adjusted timing/flags."
             suggested_action = "RETRY_WITH_ADAPTED_PARAMETERS"
-        elif not verified and ("command not found" in tool_output.lower() or "blocked" in tool_output.lower()):
+        elif not verified and (
+            "command not found" in tool_output.lower() or "blocked" in tool_output.lower()
+        ):
             verdict = Verdict.PIVOT
             rationale = "Target environment blocked tool or command is unavailable. Pivot to alternate vector."
             suggested_action = "SWITCH_TOOL_OR_TECHNIQUE"

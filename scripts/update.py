@@ -8,10 +8,11 @@ Usage:
     python scripts/update.py rollback providers.anthropic 1.2.0
     python scripts/update.py info tools.nmap
 """
+
 from __future__ import annotations
 
-import sys
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -56,7 +57,8 @@ def _install_tool(name: str, entry: dict[str, Any]) -> None:
     typer.echo(f"  [TOOL] Installing '{name}' in sandbox: {install_cmd}")
     result = subprocess.run(
         ["docker", "exec", "security-agent-sandbox", "bash", "-c", install_cmd],
-        capture_output=True, text=True
+        capture_output=True,
+        text=True,
     )
     if result.returncode == 0:
         typer.echo(f"  [OK] '{name}' installed successfully.")
@@ -94,7 +96,9 @@ def cmd_list() -> None:
 
 
 @app.command("update")
-def cmd_update(component: str = typer.Argument(help="Component path (e.g. 'tools.nmap') or 'all'")) -> None:
+def cmd_update(
+    component: str = typer.Argument(help="Component path (e.g. 'tools.nmap') or 'all'"),
+) -> None:
     """Update a component or all components to latest."""
     registry = _load_registry()
 
@@ -163,7 +167,7 @@ def cmd_rollback(
         typer.echo(f"  [REGISTRY] Updated registry: {component} → {version}")
 
     elif section == "tools":
-        typer.echo(f"  [WARN] Tool rollback requires manual Docker layer rebuild.")
+        typer.echo("  [WARN] Tool rollback requires manual Docker layer rebuild.")
         typer.echo(f"  Pinning version in registry to: {version}")
         node = registry
         for key in keys[:-1]:

@@ -1,13 +1,18 @@
 """Anthropic (Claude) provider implementation."""
+
 from __future__ import annotations
 
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
 from langchain_anthropic import ChatAnthropic
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from security_agent.core.base_provider import (
-    BaseProvider, ProviderConfig, ChatMessage, ChatResponse
+    BaseProvider,
+    ChatMessage,
+    ChatResponse,
+    ProviderConfig,
 )
 from security_agent.core.exceptions import ProviderError
 

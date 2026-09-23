@@ -1,4 +1,5 @@
 """Abstract base class for planning strategies."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -9,6 +10,7 @@ from typing import Any
 @dataclass
 class PlanStep:
     """A single step in an execution plan."""
+
     step_id: str
     description: str
     agent_id: str
@@ -20,6 +22,7 @@ class PlanStep:
 @dataclass
 class Plan:
     """A structured execution plan produced by the Planner."""
+
     plan_id: str
     objective: str
     steps: list[PlanStep]

@@ -199,9 +199,3 @@ Nếu bạn sử dụng GraphCode để phân tích đồ thị mã nguồn, th�
   }
 }
 ```
-
----
-
-## Giấy Phép (License)
-
-Mã nguồn được phân phối dưới giấy phép **MIT License**.

@@ -1,13 +1,14 @@
 """Tool sync — auto-install/update tools inside the Docker sandbox."""
+
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 import yaml
 
-from .manager import SandboxManager
 from security_agent.core.exceptions import SandboxError
+
+from .manager import SandboxManager
 
 
 class ToolSync:
@@ -16,6 +17,7 @@ class ToolSync:
     def __init__(self) -> None:
         self._manager = SandboxManager()
         from security_agent.core.paths import get_repo_root
+
         registry_path = get_repo_root() / "registry" / "versions.yaml"
         if registry_path.exists():
             with registry_path.open() as f:
@@ -36,7 +38,7 @@ class ToolSync:
                     results[tool_id] = True
                     continue
                 exit_code, output = self._manager.exec_command(container, install_cmd)
-                results[tool_id] = (exit_code == 0)
+                results[tool_id] = exit_code == 0
         finally:
             self._manager.stop(container)
 

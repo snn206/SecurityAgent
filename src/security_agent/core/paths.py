@@ -1,4 +1,5 @@
 """Repository path discovery utilities."""
+
 from __future__ import annotations
 
 import os

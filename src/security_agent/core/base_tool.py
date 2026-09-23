@@ -1,4 +1,5 @@
 """Abstract base class for all tools."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -9,6 +10,7 @@ from typing import Any
 @dataclass
 class ToolConfig:
     """Static tool config from config/tools.yaml."""
+
     tool_id: str
     name: str
     description: str

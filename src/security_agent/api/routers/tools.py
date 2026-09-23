@@ -1,9 +1,11 @@
 """Tools router — list available sandbox tools."""
+
 from __future__ import annotations
 
 from typing import Any
-from fastapi import APIRouter
+
 import yaml
+from fastapi import APIRouter
 
 from security_agent.core.paths import get_config_path
 
@@ -24,15 +26,19 @@ async def list_tools() -> list[dict[str, Any]]:
         tools_dict = data.get("tools", {})
         result = []
         for tid, tcfg in tools_dict.items():
-            result.append({
-                "id": tid,
-                "name": tcfg.get("name", tid),
-                "description": tcfg.get("description", ""),
-                "category": tcfg.get("category", "general"),
-                "command_template": tcfg.get("command_template", ""),
-                "container": "kali-sandbox",
-                "risk": "HIGH" if tid in ("sqlmap", "metasploit") else ("MEDIUM" if tid == "nuclei" else "LOW"),
-            })
+            result.append(
+                {
+                    "id": tid,
+                    "name": tcfg.get("name", tid),
+                    "description": tcfg.get("description", ""),
+                    "category": tcfg.get("category", "general"),
+                    "command_template": tcfg.get("command_template", ""),
+                    "container": "kali-sandbox",
+                    "risk": "HIGH"
+                    if tid in ("sqlmap", "metasploit")
+                    else ("MEDIUM" if tid == "nuclei" else "LOW"),
+                }
+            )
         return result
     except Exception:
         return []

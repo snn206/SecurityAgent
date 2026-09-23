@@ -1,12 +1,13 @@
 """Sandbox manager — lifecycle management of Docker containers."""
+
 from __future__ import annotations
 
-import docker
-from docker.models.containers import Container
 from pathlib import Path
 from typing import Any
 
+import docker
 import yaml
+from docker.models.containers import Container
 
 from security_agent.core.exceptions import SandboxError
 
@@ -16,6 +17,7 @@ class SandboxManager:
 
     def __init__(self, config_path: Path | None = None) -> None:
         from security_agent.core.paths import get_config_path
+
         cfg_path = config_path or get_config_path("sandbox.yaml")
         if cfg_path.exists():
             with cfg_path.open() as f:

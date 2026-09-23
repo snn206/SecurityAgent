@@ -3,15 +3,15 @@
 Provides collections, JSON documents, filter queries, updates, and deletes
 without requiring any external database server (uses TinyDB / embedded JSON).
 """
+
 from __future__ import annotations
 
 import json
-import os
 import threading
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 
 class DocumentStore:
@@ -34,7 +34,7 @@ class DocumentStore:
         if not path.exists():
             return []
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 data = json.load(f)
                 return data if isinstance(data, list) else []
         except Exception:
@@ -76,8 +76,8 @@ class DocumentStore:
             if "_id" not in doc:
                 doc["_id"] = str(uuid.uuid4())
             if "created_at" not in doc:
-                doc["created_at"] = datetime.now(timezone.utc).isoformat()
-            doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+                doc["created_at"] = datetime.now(UTC).isoformat()
+            doc["updated_at"] = datetime.now(UTC).isoformat()
 
             docs = self._load_collection(collection)
             docs.append(doc)
@@ -89,7 +89,7 @@ class DocumentStore:
         with self._lock:
             docs = self._load_collection(collection)
             ids = []
-            now = datetime.now(timezone.utc).isoformat()
+            now = datetime.now(UTC).isoformat()
             for document in documents:
                 doc = dict(document)
                 if "_id" not in doc:
@@ -122,9 +122,7 @@ class DocumentStore:
                 return matched[:limit]
             return matched
 
-    def find_one(
-        self, collection: str, filter_dict: dict[str, Any]
-    ) -> dict[str, Any] | None:
+    def find_one(self, collection: str, filter_dict: dict[str, Any]) -> dict[str, Any] | None:
         """Find the first matching document."""
         with self._lock:
             docs = self._load_collection(collection)
@@ -148,7 +146,7 @@ class DocumentStore:
                     # Handle $set operator if provided or direct merge
                     updates = update_dict.get("$set", update_dict)
                     doc.update(updates)
-                    doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+                    doc["updated_at"] = datetime.now(UTC).isoformat()
                     docs[i] = doc
                     self._save_collection(collection, docs)
                     return True

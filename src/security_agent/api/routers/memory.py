@@ -1,7 +1,9 @@
 """API router for User Memory & Brain Management."""
+
 from __future__ import annotations
 
 from typing import Any
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
@@ -11,11 +13,16 @@ router = APIRouter(prefix="/memory", tags=["memory"])
 
 
 class MemoryCreateRequest(BaseModel):
-    collection: str = Field(default="golden_rules", description="Collection: golden_rules, lessons_learned, target_knowledge")
+    collection: str = Field(
+        default="golden_rules",
+        description="Collection: golden_rules, lessons_learned, target_knowledge",
+    )
     title: str = Field(..., description="Short summary / title of the rule or lesson")
     content: str = Field(..., description="Guideline, rule body, or insight")
     target: str | None = Field(default=None, description="Optional target or subnet scope")
-    category: str | None = Field(default="general", description="Category: recon, vuln, exploit, safety, general")
+    category: str | None = Field(
+        default="general", description="Category: recon, vuln, exploit, safety, general"
+    )
     recommended_flags: str | None = Field(default=None, description="Tool flags or parameters")
 
 
@@ -39,7 +46,9 @@ async def list_memories(
 ) -> dict[str, Any]:
     """List memories for user inspection with optional search and category filters."""
     mgr = get_memory_manager()
-    items = mgr.list_memories(collection=collection, category=category, search_query=search, limit=limit)
+    items = mgr.list_memories(
+        collection=collection, category=category, search_query=search, limit=limit
+    )
     return {
         "collection": collection,
         "count": len(items),

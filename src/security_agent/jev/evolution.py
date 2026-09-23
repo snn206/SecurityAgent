@@ -3,10 +3,11 @@
 Enables agents to learn from experience, evolve tactics, and avoid repeating mistakes
 by querying past lessons stored in the embedded document store.
 """
+
 from __future__ import annotations
 
-import re
 from typing import Any
+
 from security_agent.storage.document_store import DocumentStore, get_document_store
 
 
@@ -30,7 +31,11 @@ class EvolutionEngine:
         evaluation = judgment.get("evaluation", {})
         score = evaluation.get("score", 0.5)
 
-        lesson_type = "OPTIMIZATION" if score >= 0.8 else ("RECOVERY" if verdict in ("RETRY", "PIVOT") else "OBSERVATION")
+        lesson_type = (
+            "OPTIMIZATION"
+            if score >= 0.8
+            else ("RECOVERY" if verdict in ("RETRY", "PIVOT") else "OBSERVATION")
+        )
         title = ""
         insight = ""
         recommended_flags = ""
@@ -76,8 +81,7 @@ class EvolutionEngine:
 
         # Check if identical lesson already exists to prevent duplicate noise
         existing = self.doc_store.find_one(
-            self.collection,
-            {"target": target, "tool_name": tool_name or "general", "title": title}
+            self.collection, {"target": target, "tool_name": tool_name or "general", "title": title}
         )
         if not existing:
             doc_id = self.doc_store.insert_one(self.collection, lesson_doc)
@@ -86,7 +90,7 @@ class EvolutionEngine:
             self.doc_store.update_one(
                 self.collection,
                 {"_id": existing["_id"]},
-                {"$set": {"updated_at": lesson_doc.get("created_at"), "score": score}}
+                {"$set": {"updated_at": lesson_doc.get("created_at"), "score": score}},
             )
             lesson_doc["_id"] = existing["_id"]
 

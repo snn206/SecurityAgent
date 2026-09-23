@@ -1,11 +1,14 @@
 """Reports router — export reports."""
+
 from __future__ import annotations
+
 from fastapi import APIRouter, HTTPException, Response
+
 from security_agent.execution.history import get_store
-from security_agent.reports.builder import ReportBuilder
-from security_agent.reports.exporters import MarkdownExporter, JSONExporter, HTMLExporter
+from security_agent.reports.exporters import HTMLExporter, JSONExporter, MarkdownExporter
 
 router = APIRouter(tags=["reports"])
+
 
 @router.get("/reports/{execution_id}")
 async def get_report(execution_id: str, format: str = "json") -> Response:
@@ -17,8 +20,11 @@ async def get_report(execution_id: str, format: str = "json") -> Response:
     match format:
         case "markdown" | "md":
             content = MarkdownExporter().export(report)
-            return Response(content=content, media_type="text/markdown",
-                           headers={"Content-Disposition": f'attachment; filename="report_{execution_id}.md"'})
+            return Response(
+                content=content,
+                media_type="text/markdown",
+                headers={"Content-Disposition": f'attachment; filename="report_{execution_id}.md"'},
+            )
         case "html":
             content = HTMLExporter().export(report)
             return Response(content=content, media_type="text/html")

@@ -1,7 +1,9 @@
 """WebSocket event router — real-time execution events."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
 from security_agent.api.websocket.manager import ConnectionManager
 
 ws_router = APIRouter()

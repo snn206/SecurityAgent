@@ -1,4 +1,5 @@
 """Sandbox CommandExecutor — runs commands in Docker (Kali Linux) container."""
+
 from __future__ import annotations
 
 import asyncio
@@ -29,6 +30,7 @@ class CommandExecutor:
 
     def __init__(self, config_path: Path | None = None) -> None:
         from security_agent.core.paths import get_config_path
+
         cfg_path = config_path or get_config_path("sandbox.yaml")
         if cfg_path.exists():
             with cfg_path.open() as f:
@@ -62,12 +64,19 @@ class CommandExecutor:
         effective_timeout = timeout or self._get_timeout(tool_id)
 
         docker_cmd = [
-            "docker", "run", "--rm",
-            "--network", self._cfg.get("network_mode", "bridge"),
-            "--memory", self._cfg.get("resources", {}).get("mem_limit", "2g"),
-            "--cpus", str(self._cfg.get("resources", {}).get("cpu_count", 2)),
+            "docker",
+            "run",
+            "--rm",
+            "--network",
+            self._cfg.get("network_mode", "bridge"),
+            "--memory",
+            self._cfg.get("resources", {}).get("mem_limit", "2g"),
+            "--cpus",
+            str(self._cfg.get("resources", {}).get("cpu_count", 2)),
             self._get_image(),
-            "bash", "-c", command,
+            "bash",
+            "-c",
+            command,
         ]
 
         start = time.monotonic()
@@ -81,7 +90,7 @@ class CommandExecutor:
                 stdout_b, stderr_b = await asyncio.wait_for(
                     proc.communicate(), timeout=effective_timeout
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 proc.kill()
                 await proc.communicate()
                 raise SandboxError(f"Command timed out after {effective_timeout}s")

@@ -1,12 +1,14 @@
 """Event system for SecurityAgent — real-time execution visibility."""
+
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Callable, Awaitable
 import uuid
+from collections.abc import Awaitable, Callable
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from enum import Enum
+from typing import Any
 
 
 class EventType(str, Enum):
@@ -59,11 +61,12 @@ class EventType(str, Enum):
 @dataclass
 class AgentEvent:
     """A single timestamped execution event."""
+
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     execution_id: str = ""
     event_type: EventType = EventType.WARNING
     agent_id: str = ""
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     payload: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:

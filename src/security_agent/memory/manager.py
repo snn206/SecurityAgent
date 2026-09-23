@@ -5,10 +5,11 @@ Provides comprehensive memory storage and user management for:
 - User-injected Golden Rules & policy constraints
 - Target profiles & cross-mission intelligence
 """
+
 from __future__ import annotations
 
-import re
 from typing import Any
+
 from security_agent.storage.document_store import DocumentStore, get_document_store
 
 
@@ -32,12 +33,15 @@ class MemoryManager:
         if category and category.lower() != "all":
             filter_dict["category"] = category
 
-        docs = self.doc_store.find(collection, filter_dict=filter_dict, sort_by="updated_at", limit=limit)
+        docs = self.doc_store.find(
+            collection, filter_dict=filter_dict, sort_by="updated_at", limit=limit
+        )
 
         if search_query and search_query.strip():
             q = search_query.lower().strip()
             docs = [
-                d for d in docs
+                d
+                for d in docs
                 if q in str(d.get("title", "")).lower()
                 or q in str(d.get("insight", "")).lower()
                 or q in str(d.get("target", "")).lower()
@@ -59,9 +63,7 @@ class MemoryManager:
             doc["source"] = "USER_INJECTED"
         return self.doc_store.insert_one(collection, doc)
 
-    def update_memory(
-        self, collection: str, memory_id: str, updates: dict[str, Any]
-    ) -> bool:
+    def update_memory(self, collection: str, memory_id: str, updates: dict[str, Any]) -> bool:
         """Update/edit an existing memory (e.g. user correcting agent knowledge)."""
         clean_updates = {k: v for k, v in updates.items() if k not in ("_id", "created_at")}
         return self.doc_store.update_one(collection, {"_id": memory_id}, clean_updates)

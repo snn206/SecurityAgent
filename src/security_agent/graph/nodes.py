@@ -1,15 +1,14 @@
 """LangGraph node functions — each takes AgentState and returns state update dict."""
+
 from __future__ import annotations
 
 import uuid
 from typing import Any
 
-from security_agent.core.state import AgentState
 from security_agent.core.events import EventBus, EventType
+from security_agent.core.state import AgentState
 from security_agent.planning.planner import PlannerAgent
 from security_agent.sandbox.executor import CommandExecutor
-from security_agent.tools.registry import ToolRegistry
-from security_agent.providers.registry import get_registry
 
 _event_bus: EventBus | None = None
 
@@ -27,13 +26,18 @@ async def planner_node(state: AgentState) -> dict[str, Any]:
     bus = get_event_bus()
 
     await bus.emit(EventType.AGENT_STARTED, execution_id=execution_id, agent_id="planner")
-    await bus.emit(EventType.PLAN_CREATED, execution_id=execution_id, agent_id="planner",
-                   payload={"message": "Creating execution plan..."})
+    await bus.emit(
+        EventType.PLAN_CREATED,
+        execution_id=execution_id,
+        agent_id="planner",
+        payload={"message": "Creating execution plan..."},
+    )
 
     planner = PlannerAgent()
-    
+
     # Inject user golden rules and past distilled lessons from memory
     from security_agent.memory.manager import get_memory_manager
+
     mem_mgr = get_memory_manager()
     memory_context = mem_mgr.get_consolidated_context(state.get("scope", ""))
 
@@ -45,8 +49,12 @@ async def planner_node(state: AgentState) -> dict[str, Any]:
         },
     )
 
-    await bus.emit(EventType.PLAN_CREATED, execution_id=execution_id, agent_id="planner",
-                   payload={"plan": plan.to_dict()})
+    await bus.emit(
+        EventType.PLAN_CREATED,
+        execution_id=execution_id,
+        agent_id="planner",
+        payload={"plan": plan.to_dict()},
+    )
 
     return {
         "plan": plan.to_dict(),
@@ -84,8 +92,12 @@ async def tool_router_node(state: AgentState) -> dict[str, Any]:
     tools = current_step.get("tools", [])
     selected_tool = tools[0] if tools else "shell"
 
-    await bus.emit(EventType.TOOL_SELECTED, execution_id=execution_id, agent_id="tool_router",
-                   payload={"tool_id": selected_tool, "step_id": current_step_id})
+    await bus.emit(
+        EventType.TOOL_SELECTED,
+        execution_id=execution_id,
+        agent_id="tool_router",
+        payload={"tool_id": selected_tool, "step_id": current_step_id},
+    )
 
     return {
         "pending_tool": selected_tool,
@@ -108,15 +120,24 @@ async def sandbox_executor_node(state: AgentState) -> dict[str, Any]:
     executor = CommandExecutor()
     result = await executor.run(tool_id=tool_id, target=target, flags=flags)
 
-    await bus.emit(EventType.SANDBOX_COMMAND, execution_id=execution_id, agent_id="tool_router",
-                   payload={"command": result.command})
-    await bus.emit(EventType.SANDBOX_STDOUT, execution_id=execution_id,
-                   payload={"stdout": result.stdout})
+    await bus.emit(
+        EventType.SANDBOX_COMMAND,
+        execution_id=execution_id,
+        agent_id="tool_router",
+        payload={"command": result.command},
+    )
+    await bus.emit(
+        EventType.SANDBOX_STDOUT, execution_id=execution_id, payload={"stdout": result.stdout}
+    )
     if result.stderr:
-        await bus.emit(EventType.SANDBOX_STDERR, execution_id=execution_id,
-                       payload={"stderr": result.stderr})
-    await bus.emit(EventType.SANDBOX_EXIT, execution_id=execution_id,
-                   payload={"exit_code": result.exit_code, "duration": result.duration_seconds})
+        await bus.emit(
+            EventType.SANDBOX_STDERR, execution_id=execution_id, payload={"stderr": result.stderr}
+        )
+    await bus.emit(
+        EventType.SANDBOX_EXIT,
+        execution_id=execution_id,
+        payload={"exit_code": result.exit_code, "duration": result.duration_seconds},
+    )
 
     # Mark step complete
     completed_steps = list(state.get("completed_steps") or [])
@@ -152,15 +173,16 @@ async def analyzer_node(state: AgentState) -> dict[str, Any]:
     await bus.emit(EventType.AGENT_STARTED, execution_id=execution_id, agent_id="analyzer")
 
     # JEV (Judge / Evaluator / Verifier) Harness & Evolution
-    from security_agent.jev.judge import Judge
     from security_agent.jev.evolution import EvolutionEngine
+    from security_agent.jev.judge import Judge
+
     judge = Judge()
     evolution = EvolutionEngine()
 
     tool_output = state.get("tool_output") or {}
     findings = list(state.get("findings") or [])
     jev_judgments = list(state.get("jev_judgments") or [])
-    
+
     if tool_output:
         tool_id = tool_output.get("tool_id", "unknown")
         stdout = tool_output.get("stdout", "")
@@ -185,18 +207,24 @@ async def analyzer_node(state: AgentState) -> dict[str, Any]:
         )
 
         # 3. Verified finding extraction
-        findings.append({
-            "tool_id": tool_id,
-            "stdout": stdout[:2000],
-            "exit_code": tool_output.get("exit_code"),
-            "jev_score": judgment["evaluation"]["score"],
-            "jev_grade": judgment["evaluation"]["grade"],
-            "verdict": judgment["verdict"],
-            "facts_count": judgment["verification"].get("facts_count", 0),
-        })
+        findings.append(
+            {
+                "tool_id": tool_id,
+                "stdout": stdout[:2000],
+                "exit_code": tool_output.get("exit_code"),
+                "jev_score": judgment["evaluation"]["score"],
+                "jev_grade": judgment["evaluation"]["grade"],
+                "verdict": judgment["verdict"],
+                "facts_count": judgment["verification"].get("facts_count", 0),
+            }
+        )
 
-    await bus.emit(EventType.FINDING, execution_id=execution_id, agent_id="analyzer",
-                   payload={"findings_count": len(findings)})
+    await bus.emit(
+        EventType.FINDING,
+        execution_id=execution_id,
+        agent_id="analyzer",
+        payload={"findings_count": len(findings)},
+    )
 
     return {"findings": findings, "jev_judgments": jev_judgments}
 
@@ -216,8 +244,12 @@ async def reporter_node(state: AgentState) -> dict[str, Any]:
         "status": "complete",
     }
 
-    await bus.emit(EventType.REPORT_GENERATED, execution_id=execution_id, agent_id="reporter",
-                   payload={"report_id": execution_id})
+    await bus.emit(
+        EventType.REPORT_GENERATED,
+        execution_id=execution_id,
+        agent_id="reporter",
+        payload={"report_id": execution_id},
+    )
     await bus.emit(EventType.TASK_COMPLETED, execution_id=execution_id, agent_id="reporter")
 
     return {"report": report, "status": "done"}

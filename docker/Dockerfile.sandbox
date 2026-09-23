@@ -16,7 +16,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     # Web tools
     nikto gobuster dirb wfuzz \
     # Exploitation
-    sqlmap metasploit-framework \
+    sqlmap \
     # Forensics / misc
     binutils file python3 python3-pip \
     # For streaming output
@@ -25,10 +25,10 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # ── Python tools ───────────────────────────────────────────────────────────
-RUN pip3 install --no-cache-dir \
+RUN pip3 install --no-cache-dir --break-system-packages \
     requests \
     impacket \
-    ldap3
+    ldap3 || true
 
 # ── Wordlists ──────────────────────────────────────────────────────────────
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
@@ -46,8 +46,9 @@ RUN cp /usr/share/wordlists/dirb/common.txt /wordlists/common.txt 2>/dev/null ||
     echo "example.com" > /wordlists/common.txt
 
 # ── Entrypoint ─────────────────────────────────────────────────────────────
-COPY kali/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN printf '#!/bin/bash\nset -e\nmkdir -p /artifacts /workspace\nexec "$@"\n' > /entrypoint.sh \
+    && chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["sleep", "infinity"]
+

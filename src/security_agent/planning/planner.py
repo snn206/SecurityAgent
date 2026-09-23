@@ -1,17 +1,15 @@
 """LangGraph-based planning agent — produces structured execution plans."""
+
 from __future__ import annotations
 
 import json
 import uuid
 from typing import Any
 
-from langchain_core.messages import SystemMessage, HumanMessage
-
 from security_agent.core.base_planner import BasePlanner, Plan, PlanStep
 from security_agent.core.base_provider import ChatMessage
 from security_agent.core.exceptions import PlanningError
 from security_agent.providers.registry import get_registry
-
 
 SYSTEM_PROMPT = """You are a security research planning agent.
 Given a user objective, produce a detailed execution plan in JSON format.
@@ -65,10 +63,14 @@ class PlannerAgent(BasePlanner):
         provider = self._get_provider()
         messages = [
             ChatMessage(role="system", content=SYSTEM_PROMPT),
-            ChatMessage(role="user", content=f"Objective: {objective}\nContext: {json.dumps(context or {})}"),
+            ChatMessage(
+                role="user", content=f"Objective: {objective}\nContext: {json.dumps(context or {})}"
+            ),
         ]
         try:
-            response = await provider.chat(messages, model=self._model, temperature=0.1, max_tokens=4096)
+            response = await provider.chat(
+                messages, model=self._model, temperature=0.1, max_tokens=4096
+            )
             raw = response.content.strip()
             # Strip markdown code block if present
             if raw.startswith("```"):
@@ -91,13 +93,18 @@ class PlannerAgent(BasePlanner):
         provider = self._get_provider()
         messages = [
             ChatMessage(role="system", content=SYSTEM_PROMPT),
-            ChatMessage(role="user", content=(
-                f"Revise this plan based on feedback.\n\n"
-                f"Current plan:\n{json.dumps(plan.to_dict(), indent=2)}\n\n"
-                f"Feedback: {feedback}"
-            )),
+            ChatMessage(
+                role="user",
+                content=(
+                    f"Revise this plan based on feedback.\n\n"
+                    f"Current plan:\n{json.dumps(plan.to_dict(), indent=2)}\n\n"
+                    f"Feedback: {feedback}"
+                ),
+            ),
         ]
-        response = await provider.chat(messages, model=self._model, temperature=0.1, max_tokens=4096)
+        response = await provider.chat(
+            messages, model=self._model, temperature=0.1, max_tokens=4096
+        )
         raw = response.content.strip()
         if raw.startswith("```"):
             raw = raw.split("```")[1]

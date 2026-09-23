@@ -1,14 +1,17 @@
 """Abstract base class for all provider implementations."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from typing import Any, AsyncIterator
+from typing import Any
 
 
 @dataclass
 class ProviderConfig:
     """Runtime config for a provider instance."""
+
     provider_id: str
     provider_type: str
     api_key: str | None = None
@@ -20,7 +23,7 @@ class ProviderConfig:
 
 @dataclass
 class ChatMessage:
-    role: str   # "system" | "user" | "assistant" | "tool"
+    role: str  # "system" | "user" | "assistant" | "tool"
     content: str
     tool_calls: list[dict[str, Any]] | None = None
     tool_call_id: str | None = None
@@ -33,7 +36,7 @@ class ChatResponse:
     usage: dict[str, int] | None = None
     tool_calls: list[dict[str, Any]] | None = None
     finish_reason: str = "stop"
-    reasoning: str | None = None     # extended thinking / reasoning trace
+    reasoning: str | None = None  # extended thinking / reasoning trace
 
 
 class BaseProvider(ABC):

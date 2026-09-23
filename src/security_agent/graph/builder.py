@@ -1,21 +1,23 @@
 """LangGraph StateGraph builder for SecurityAgent."""
+
 from __future__ import annotations
 
-from langgraph.graph import StateGraph, END
+from langgraph.graph import END, StateGraph
 
 from security_agent.core.state import AgentState
-from .nodes import (
-    planner_node,
-    reasoner_node,
-    tool_router_node,
-    sandbox_executor_node,
-    analyzer_node,
-    reporter_node,
-)
+
 from .edges import (
+    route_after_analysis,
     route_after_planning,
     route_after_tool,
-    route_after_analysis,
+)
+from .nodes import (
+    analyzer_node,
+    planner_node,
+    reasoner_node,
+    reporter_node,
+    sandbox_executor_node,
+    tool_router_node,
 )
 
 
@@ -70,7 +72,7 @@ def build_graph(checkpointer=None) -> StateGraph:
         "analyzer",
         route_after_analysis,
         {
-            "planner": "planner",     # re-plan if needed
+            "planner": "planner",  # re-plan if needed
             "tool_router": "tool_router",
             "reporter": "reporter",
         },

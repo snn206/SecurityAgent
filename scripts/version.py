@@ -1,6 +1,7 @@
 """
 SecurityAgent version helpers: bump, validate, and tag.
 """
+
 from __future__ import annotations
 
 import re

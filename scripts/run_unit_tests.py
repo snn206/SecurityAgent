@@ -1,4 +1,5 @@
 """Fast test verification runner for DocumentStore, JEV, Memory, and Hierarchy."""
+
 import asyncio
 import sys
 import tempfile
@@ -7,14 +8,14 @@ from pathlib import Path
 # Add src to sys.path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from security_agent.storage.document_store import DocumentStore
-from security_agent.jev.verifier import Verifier
 from security_agent.jev.evaluator import Evaluator
-from security_agent.jev.judge import Judge, Verdict
 from security_agent.jev.evolution import EvolutionEngine
+from security_agent.jev.judge import Judge, Verdict
+from security_agent.jev.verifier import Verifier
 from security_agent.memory.manager import MemoryManager
-from security_agent.orchestration.hierarchy import HierarchyManager, AgentRole
+from security_agent.orchestration.hierarchy import AgentRole, HierarchyManager
 from security_agent.orchestration.task_queue import ParentTaskQueue
+from security_agent.storage.document_store import DocumentStore
 
 
 def test_document_store():
@@ -69,11 +70,14 @@ def test_memory_manager():
         store = DocumentStore(base_dir=tmp)
         mgr = MemoryManager(doc_store=store)
 
-        rule_id = mgr.add_memory("golden_rules", {
-            "title": "Stealth Scan",
-            "rule": "Always use -T2",
-            "category": "recon",
-        })
+        rule_id = mgr.add_memory(
+            "golden_rules",
+            {
+                "title": "Stealth Scan",
+                "rule": "Always use -T2",
+                "category": "recon",
+            },
+        )
         assert rule_id is not None
         assert len(mgr.list_memories("golden_rules")) == 1
 
@@ -101,7 +105,7 @@ async def test_hierarchy_and_queue():
     # 3rd child must fail
     try:
         hm.spawn_child("parent-recon", "Scanner 3", "Over limit")
-        assert False, "Should have raised RuntimeError"
+        raise AssertionError("Should have raised RuntimeError")
     except RuntimeError:
         pass
 

@@ -1,19 +1,19 @@
 """Execution tracker and history store."""
+
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy import JSON, DateTime, Float, String, select
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Integer, Float, JSON, DateTime, select, func
 
-from security_agent.core.events import EventBus, EventType, AgentEvent
-
+from security_agent.core.events import AgentEvent, EventBus, EventType
 
 # ─── ORM Models ───────────────────────────────────────────────────────────────
+
 
 class Base(DeclarativeBase):
     pass
@@ -31,8 +31,9 @@ class ExecutionRecord(Base):
     report: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     provider: Mapped[str] = mapped_column(String, default="")
     model: Mapped[str] = mapped_column(String, default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),
-                                                  default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     duration_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
 
@@ -50,6 +51,7 @@ class EventRecord(Base):
 
 # ─── HistoryStore ─────────────────────────────────────────────────────────────
 
+
 class HistoryStore:
     """Async persistence layer for execution history."""
 
@@ -62,12 +64,16 @@ class HistoryStore:
         async with self._engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
-    async def create_execution(self, execution_id: str, task_id: str,
-                                user_request: str, scope: str = "") -> ExecutionRecord:
+    async def create_execution(
+        self, execution_id: str, task_id: str, user_request: str, scope: str = ""
+    ) -> ExecutionRecord:
         async with self._session_factory() as session:
             record = ExecutionRecord(
-                id=execution_id, task_id=task_id,
-                user_request=user_request, scope=scope, status="pending",
+                id=execution_id,
+                task_id=task_id,
+                user_request=user_request,
+                scope=scope,
+                status="pending",
             )
             session.add(record)
             await session.commit()
@@ -88,8 +94,10 @@ class HistoryStore:
     async def list_executions(self, limit: int = 50, offset: int = 0) -> list[ExecutionRecord]:
         async with self._session_factory() as session:
             result = await session.execute(
-                select(ExecutionRecord).order_by(ExecutionRecord.created_at.desc())
-                .limit(limit).offset(offset)
+                select(ExecutionRecord)
+                .order_by(ExecutionRecord.created_at.desc())
+                .limit(limit)
+                .offset(offset)
             )
             return list(result.scalars().all())
 
@@ -118,6 +126,7 @@ class HistoryStore:
 
 # ─── ExecutionTracker ─────────────────────────────────────────────────────────
 
+
 class ExecutionTracker:
     """Subscribes to EventBus and persists all events to HistoryStore."""
 
@@ -131,15 +140,18 @@ class ExecutionTracker:
 
         if event.event_type == EventType.TASK_COMPLETED:
             await self._store.update_execution(
-                event.execution_id, status="done",
-                completed_at=datetime.now(timezone.utc),
+                event.execution_id,
+                status="done",
+                completed_at=datetime.now(UTC),
             )
         elif event.event_type == EventType.TASK_FAILED:
-            await self._store.update_execution(event.execution_id, status="failed",
-                                               completed_at=datetime.now(timezone.utc))
+            await self._store.update_execution(
+                event.execution_id, status="failed", completed_at=datetime.now(UTC)
+            )
         elif event.event_type == EventType.PLAN_CREATED and event.payload.get("plan"):
-            await self._store.update_execution(event.execution_id,
-                                               plan=event.payload["plan"], status="executing")
+            await self._store.update_execution(
+                event.execution_id, plan=event.payload["plan"], status="executing"
+            )
         elif event.event_type == EventType.REPORT_GENERATED:
             await self._store.update_execution(event.execution_id, status="reporting")
 

@@ -1,13 +1,18 @@
 """Ollama (local) provider implementation."""
+
 from __future__ import annotations
 
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
 from security_agent.core.base_provider import (
-    BaseProvider, ProviderConfig, ChatMessage, ChatResponse
+    BaseProvider,
+    ChatMessage,
+    ChatResponse,
+    ProviderConfig,
 )
 from security_agent.core.exceptions import ProviderError
 
@@ -82,6 +87,7 @@ class OllamaProvider(BaseProvider):
     async def health_check(self) -> bool:
         try:
             import httpx
+
             async with httpx.AsyncClient() as client:
                 resp = await client.get(f"{self._base_url}/api/tags", timeout=5.0)
                 return resp.status_code == 200

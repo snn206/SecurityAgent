@@ -1,14 +1,15 @@
 """SSE stream endpoint — server-sent events for execution monitoring."""
+
 from __future__ import annotations
 
 import asyncio
 import json
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from fastapi import APIRouter
 from sse_starlette.sse import EventSourceResponse
 
-from security_agent.core.events import EventBus, AgentEvent
+from security_agent.core.events import AgentEvent
 from security_agent.graph.nodes import get_event_bus
 
 sse_router = APIRouter()
@@ -34,7 +35,7 @@ async def _event_generator(execution_id: str) -> AsyncGenerator[dict, None]:
                 }
                 if event.event_type.value in ("task.completed", "task.failed", "task.cancelled"):
                     break
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 yield {"event": "ping", "data": "keepalive"}
     finally:
         bus.unsubscribe(enqueue, execution_id=execution_id)

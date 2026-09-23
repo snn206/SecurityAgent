@@ -1,12 +1,12 @@
 """LangGraph state definition for the SecurityAgent workflow."""
+
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Annotated
-from typing_extensions import TypedDict
+from typing import Annotated, Any
 
-from langgraph.graph.message import add_messages
 from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
 
 
 class AgentState(TypedDict, total=False):
@@ -24,7 +24,7 @@ class AgentState(TypedDict, total=False):
     messages: Annotated[list[BaseMessage], add_messages]
 
     # Planning
-    plan: dict[str, Any] | None         # serialized Plan
+    plan: dict[str, Any] | None  # serialized Plan
     current_step_id: str | None
     completed_steps: list[str]
 
@@ -52,5 +52,5 @@ class AgentState(TypedDict, total=False):
     report: dict[str, Any] | None
 
     # Status
-    status: str   # pending | planning | executing | analyzing | reporting | done | failed
+    status: str  # pending | planning | executing | analyzing | reporting | done | failed
     error: str | None

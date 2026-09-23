@@ -1,4 +1,5 @@
 """Custom exceptions for SecurityAgent."""
+
 from __future__ import annotations
 
 

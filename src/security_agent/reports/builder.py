@@ -1,9 +1,9 @@
 """Report builder — aggregates execution data into a structured report."""
+
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -29,8 +29,9 @@ class ReportBuilder:
         # Timeline from events
         timeline = [
             {
-                "timestamp": getattr(e, "timestamp", datetime.now(timezone.utc)).isoformat()
-                if hasattr(e, "timestamp") else str(e.get("timestamp", "")),
+                "timestamp": getattr(e, "timestamp", datetime.now(UTC)).isoformat()
+                if hasattr(e, "timestamp")
+                else str(e.get("timestamp", "")),
                 "event_type": getattr(e, "event_type", "").value
                 if hasattr(getattr(e, "event_type", None), "value")
                 else str(getattr(e, "event_type", e.get("event_type", ""))),
@@ -58,7 +59,7 @@ class ReportBuilder:
         return {
             "report_id": str(uuid.uuid4()),
             "execution_id": execution_id,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "metadata": {
                 "provider": provider,
                 "model": model,
@@ -70,12 +71,8 @@ class ReportBuilder:
             "objective": user_request,
             "scope": scope,
             "execution_timeline": timeline,
-            "actions_performed": [
-                s["description"] for s in (plan or {}).get("steps", [])
-            ],
-            "tools_used": list({
-                f["tool_id"] for f in findings if f.get("tool_id")
-            }),
+            "actions_performed": [s["description"] for s in (plan or {}).get("steps", [])],
+            "tools_used": list({f["tool_id"] for f in findings if f.get("tool_id")}),
             "findings": findings,
             "commands": commands,
             "artifacts": artifacts,

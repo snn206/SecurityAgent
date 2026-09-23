@@ -1,7 +1,9 @@
 """API router for Multi-Agent Hierarchy and Parent Task Queue."""
+
 from __future__ import annotations
 
 from typing import Any
+
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 

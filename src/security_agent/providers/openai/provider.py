@@ -1,13 +1,18 @@
 """OpenAI + OpenAI-compatible provider implementation."""
+
 from __future__ import annotations
 
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
 from security_agent.core.base_provider import (
-    BaseProvider, ProviderConfig, ChatMessage, ChatResponse
+    BaseProvider,
+    ChatMessage,
+    ChatResponse,
+    ProviderConfig,
 )
 from security_agent.core.exceptions import ProviderError
 

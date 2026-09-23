@@ -1,4 +1,5 @@
 """JEV Verifier: Empirically verifies security findings, evidence, and tool outputs."""
+
 from __future__ import annotations
 
 import re
@@ -54,7 +55,9 @@ class Verifier:
 
         elif tool_name.lower() in ("nuclei", "nikto"):
             # Check for vulnerability detection indicators
-            vulns = re.findall(r"\[(critical|high|medium|low|info)\]\s+\[([\w\-]+)\]", raw_output, re.IGNORECASE)
+            vulns = re.findall(
+                r"\[(critical|high|medium|low|info)\]\s+\[([\w\-]+)\]", raw_output, re.IGNORECASE
+            )
             if vulns:
                 extracted_facts.extend([f"Vuln template matched: {v[1]} ({v[0]})" for v in vulns])
                 return {
@@ -66,11 +69,15 @@ class Verifier:
                 }
 
         # Generic output verification
-        has_error = bool(re.search(r"\b(error|fatal|command not found|timed out)\b", raw_output, re.IGNORECASE))
+        has_error = bool(
+            re.search(r"\b(error|fatal|command not found|timed out)\b", raw_output, re.IGNORECASE)
+        )
         return {
             "verified": not has_error,
             "confidence": 0.7 if not has_error else 0.2,
-            "reason": "Command executed without fatal errors" if not has_error else "Tool reported execution error",
+            "reason": "Command executed without fatal errors"
+            if not has_error
+            else "Tool reported execution error",
             "extracted_facts": extracted_facts,
         }
 

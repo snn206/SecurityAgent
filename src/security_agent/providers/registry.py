@@ -1,4 +1,5 @@
 """Provider registry — loads providers from config/providers.yaml."""
+
 from __future__ import annotations
 
 import os
@@ -18,6 +19,7 @@ class ProviderRegistry:
         self._providers: dict[str, BaseProvider] = {}
         self._config: dict[str, Any] = {}
         from security_agent.core.paths import get_config_path
+
         self._config_path = config_path or get_config_path("providers.yaml")
 
     def load(self) -> None:
@@ -40,6 +42,7 @@ class ProviderRegistry:
             except Exception as exc:
                 # Log and skip — don't crash startup due to missing optional provider
                 import structlog
+
                 structlog.get_logger().warning(
                     "provider_load_failed", provider_id=provider_id, error=str(exc)
                 )
@@ -63,21 +66,27 @@ class ProviderRegistry:
         match provider_type:
             case "anthropic":
                 from security_agent.providers.anthropic.provider import AnthropicProvider
+
                 return AnthropicProvider(pconfig)
             case "openai":
                 from security_agent.providers.openai.provider import OpenAIProvider
+
                 return OpenAIProvider(pconfig)
             case "openai_compatible":
                 from security_agent.providers.openai.provider import OpenAIProvider
+
                 return OpenAIProvider(pconfig)
             case "ollama":
                 from security_agent.providers.ollama.provider import OllamaProvider
+
                 return OllamaProvider(pconfig)
             case "mistral":
                 from security_agent.providers.mistral.provider import MistralProvider
+
                 return MistralProvider(pconfig)
             case "nvidia_nim":
                 from security_agent.providers.nvidia_nim.provider import NvidiaNimProvider
+
                 return NvidiaNimProvider(pconfig)
             case _:
                 raise ProviderError(provider_id, f"Unknown provider type: {provider_type!r}")

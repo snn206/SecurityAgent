@@ -1,10 +1,15 @@
 """Executions router — view execution trace and history."""
+
 from __future__ import annotations
+
 from typing import Any
+
 from fastapi import APIRouter, HTTPException
+
 from security_agent.execution.history import get_store
 
 router = APIRouter(tags=["executions"])
+
 
 @router.get("/executions/{execution_id}")
 async def get_execution(execution_id: str) -> dict[str, Any]:
@@ -25,6 +30,7 @@ async def get_execution(execution_id: str) -> dict[str, Any]:
         "completed_at": record.completed_at.isoformat() if record.completed_at else None,
         "duration_seconds": record.duration_seconds,
     }
+
 
 @router.get("/executions/{execution_id}/events")
 async def get_execution_events(execution_id: str) -> dict[str, Any]:
