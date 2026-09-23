@@ -142,3 +142,14 @@ class ExecutionTracker:
                                                plan=event.payload["plan"], status="executing")
         elif event.event_type == EventType.REPORT_GENERATED:
             await self._store.update_execution(event.execution_id, status="reporting")
+
+
+_global_store: HistoryStore | None = None
+
+
+def get_store() -> HistoryStore:
+    """Singleton getter for HistoryStore."""
+    global _global_store
+    if _global_store is None:
+        _global_store = HistoryStore()
+    return _global_store

@@ -40,11 +40,11 @@ class MarkdownExporter:
             "",
             "## Tools Used",
             "",
-            *[f"- `{t}`" for t in tools] or ["- None"],
+            *(([f"- `{t}`" for t in tools]) or ["- None"]),
             "",
             "## Actions Performed",
             "",
-            *[f"- {a}" for a in report.get("actions_performed", [])] or ["- None"],
+            *(([f"- {a}" for a in report.get("actions_performed", [])]) or ["- None"]),
             "",
             "## Findings",
             "",
@@ -77,7 +77,7 @@ class MarkdownExporter:
             "",
             "## Artifacts",
             "",
-            *[f"- `{a}`" for a in report.get("artifacts", [])] or ["- None"],
+            *(([f"- `{a}`" for a in report.get("artifacts", [])]) or ["- None"]),
         ]
 
         return "\n".join(lines)

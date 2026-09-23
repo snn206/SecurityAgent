@@ -31,9 +31,18 @@ async def planner_node(state: AgentState) -> dict[str, Any]:
                    payload={"message": "Creating execution plan..."})
 
     planner = PlannerAgent()
+    
+    # Inject user golden rules and past distilled lessons from memory
+    from security_agent.memory.manager import get_memory_manager
+    mem_mgr = get_memory_manager()
+    memory_context = mem_mgr.get_consolidated_context(state.get("scope", ""))
+
     plan = await planner.create_plan(
         objective=state.get("user_request", ""),
-        context={"scope": state.get("scope", "")},
+        context={
+            "scope": state.get("scope", ""),
+            "memory_context": memory_context,
+        },
     )
 
     await bus.emit(EventType.PLAN_CREATED, execution_id=execution_id, agent_id="planner",
@@ -142,20 +151,54 @@ async def analyzer_node(state: AgentState) -> dict[str, Any]:
     bus = get_event_bus()
     await bus.emit(EventType.AGENT_STARTED, execution_id=execution_id, agent_id="analyzer")
 
-    # Stub: collect tool output as a finding — extend with LLM analysis
+    # JEV (Judge / Evaluator / Verifier) Harness & Evolution
+    from security_agent.jev.judge import Judge
+    from security_agent.jev.evolution import EvolutionEngine
+    judge = Judge()
+    evolution = EvolutionEngine()
+
     tool_output = state.get("tool_output") or {}
     findings = list(state.get("findings") or [])
+    jev_judgments = list(state.get("jev_judgments") or [])
+    
     if tool_output:
+        tool_id = tool_output.get("tool_id", "unknown")
+        stdout = tool_output.get("stdout", "")
+        target = state.get("scope", "")
+
+        # 1. Run JEV Judgment
+        judgment = judge.judge_step(
+            agent_role="analyzer",
+            goal=state.get("user_request", ""),
+            tool_name=tool_id,
+            tool_output=stdout,
+        )
+        jev_judgments.append(judgment)
+
+        # 2. Distill lessons learned from this run (evolution)
+        lesson = evolution.distill_lesson(
+            target=target,
+            tool_name=tool_id,
+            agent_role="analyzer",
+            judgment=judgment,
+            raw_output=stdout,
+        )
+
+        # 3. Verified finding extraction
         findings.append({
-            "tool_id": tool_output.get("tool_id"),
-            "stdout": tool_output.get("stdout", ""),
+            "tool_id": tool_id,
+            "stdout": stdout[:2000],
             "exit_code": tool_output.get("exit_code"),
+            "jev_score": judgment["evaluation"]["score"],
+            "jev_grade": judgment["evaluation"]["grade"],
+            "verdict": judgment["verdict"],
+            "facts_count": judgment["verification"].get("facts_count", 0),
         })
 
     await bus.emit(EventType.FINDING, execution_id=execution_id, agent_id="analyzer",
                    payload={"findings_count": len(findings)})
 
-    return {"findings": findings}
+    return {"findings": findings, "jev_judgments": jev_judgments}
 
 
 async def reporter_node(state: AgentState) -> dict[str, Any]:

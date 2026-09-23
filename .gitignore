@@ -66,3 +66,8 @@ Thumbs.db
 *.crt
 *.p12
 secrets/
+
+dist/
+node_modules/
+!src/security_agent/ui/dist/
+!src/security_agent/ui/dist/**

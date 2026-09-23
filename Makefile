@@ -27,6 +27,15 @@ dev: ## Start API server in dev mode (auto-reload)
 	$(UV) run uvicorn security_agent.api.app:create_app \
 		--factory --host 0.0.0.0 --port $(SA_PORT) --reload
 
+ui-install: ## Install React UI dependencies
+	cd src/security_agent/ui && npm install
+
+ui-build: ## Build React UI for production
+	cd src/security_agent/ui && npm run build
+
+ui-dev: ## Run Vite dev server for UI (port 5173 with proxy to 8080)
+	cd src/security_agent/ui && npm run dev
+
 # ─── Quality ─────────────────────────────────────────────────────────────────
 
 test: ## Run all tests

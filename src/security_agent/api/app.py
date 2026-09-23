@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from security_agent.api.routers import tasks, executions, reports, providers, tools, health
+from security_agent.api.routers import tasks, executions, reports, providers, tools, health, memory, hierarchy
 from security_agent.api.websocket.manager import ConnectionManager
 from security_agent.api.middleware.logging import LoggingMiddleware
 from security_agent.execution.history import HistoryStore
@@ -74,6 +74,8 @@ def create_app() -> FastAPI:
     app.include_router(reports.router, prefix="/api/v1")
     app.include_router(providers.router, prefix="/api/v1")
     app.include_router(tools.router, prefix="/api/v1")
+    app.include_router(memory.router, prefix="/api/v1")
+    app.include_router(hierarchy.router, prefix="/api/v1")
 
     # ── WebSocket ──────────────────────────────────────────────────────────────
     from security_agent.api.websocket.events import ws_router
@@ -84,8 +86,10 @@ def create_app() -> FastAPI:
     app.include_router(sse_router)
 
     # ── Static UI ─────────────────────────────────────────────────────────────
-    ui_dir = Path(__file__).parent.parent / "ui" / "static"
-    if ui_dir.exists():
+    dist_dir = Path(__file__).parent.parent / "ui" / "dist"
+    static_dir = Path(__file__).parent.parent / "ui" / "static"
+    ui_dir = dist_dir if dist_dir.exists() else (static_dir if static_dir.exists() else None)
+    if ui_dir is not None:
         app.mount("/", StaticFiles(directory=str(ui_dir), html=True), name="ui")
 
     return app

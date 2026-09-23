@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any
 from fastapi import APIRouter, HTTPException
-from security_agent.api.app import get_store
+from security_agent.execution.history import get_store
 
 router = APIRouter(tags=["executions"])
 

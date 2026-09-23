@@ -1,7 +1,7 @@
 """Reports router — export reports."""
 from __future__ import annotations
 from fastapi import APIRouter, HTTPException, Response
-from security_agent.api.app import get_store
+from security_agent.execution.history import get_store
 from security_agent.reports.builder import ReportBuilder
 from security_agent.reports.exporters import MarkdownExporter, JSONExporter, HTMLExporter
 

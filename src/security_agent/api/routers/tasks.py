@@ -32,7 +32,8 @@ class TaskResponse(BaseModel):
 
 async def _run_graph(execution_id: str, task_id: str, request: TaskRequest) -> None:
     """Background task: run the LangGraph workflow."""
-    from security_agent.api.app import get_store, get_ws_manager
+    from security_agent.execution.history import get_store
+    from security_agent.api.app import get_ws_manager
 
     store = get_store()
     bus = get_event_bus()
